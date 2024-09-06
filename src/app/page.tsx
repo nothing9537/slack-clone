@@ -1,9 +1,7 @@
-import { Button } from "@/shared/ui/button";
+import { AuthScreen } from "@/pages-layer/auth";
 
 export default function Home() {
   return (
-    <Button variant="destructive" size="lg">
-      Click me
-    </Button>
+    <AuthScreen />
   );
 }
