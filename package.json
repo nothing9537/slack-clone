@@ -1,0 +1,42 @@
+{
+  "name": "slack-clone",
+  "version": "0.1.0",
+  "private": true,
+  "author": "nothingg9537",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "studio": "npx prisma studio",
+    "db:update": "npx concurrently \"npx prisma generate\" \"npx prisma db push\"",
+    "add:component": "npx shadcn@latest add"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.439.0",
+    "next": "14.2.8",
+    "react": "^18",
+    "react-dom": "^18",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-base": "^1.0.0",
+    "eslint-config-next": "14.2.8",
+    "eslint-config-typescript": "^3.0.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
