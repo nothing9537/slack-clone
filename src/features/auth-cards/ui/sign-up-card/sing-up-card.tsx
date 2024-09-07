@@ -15,10 +15,10 @@ import { GenerateSignUpComponents } from "../../lib/consts/component-generators"
 import { SignCardServices } from "../sign-card-wrapper/sign-card-services";
 
 interface SignInCardProps {
-  authAction: () => void; // change card into a sign-in card
+  switchCardsAction: () => void; // change card into a sign-in card
 }
 
-export const SignUpCard: FC<SignInCardProps> = ({ authAction }) => {
+export const SignUpCard: FC<SignInCardProps> = ({ switchCardsAction }) => {
   const form = useForm<SignUpSchemaType>({ mode: "all", resolver: zodResolver(SignUpSchema) });
 
   return (
@@ -27,9 +27,9 @@ export const SignUpCard: FC<SignInCardProps> = ({ authAction }) => {
       descriptionText="Use your email or another service to continue."
       form={form}
       footer={{
-        action: authAction,
         actionText: "Sign In",
         description: "Already have an account?",
+        action: switchCardsAction,
       }}
     >
       <form className="space-y-2.5">

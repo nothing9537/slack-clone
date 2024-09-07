@@ -8,3 +8,5 @@ export type SignUpSchemaType = z.infer<typeof SignUpSchema>;
 
 export type SignInComponent = FormFactoryComponent<SignInSchemaType>;
 export type SignUpComponent = FormFactoryComponent<SignUpSchemaType>;
+
+export type AuthType = "github" | "google";

@@ -12,15 +12,19 @@
     "lint:fix": "next lint --fix",
     "studio": "npx prisma studio",
     "db:update": "npx concurrently \"npx prisma generate\" \"npx prisma db push\"",
-    "add:component": "npx shadcn@latest add"
+    "add:component": "npx shadcn@latest add",
+    "convex:dev": "npx convex dev"
   },
   "dependencies": {
+    "@auth/core": "^0.34.2",
+    "@convex-dev/auth": "^0.0.64",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "convex": "^1.15.0",
     "lucide-react": "^0.439.0",
     "next": "14.2.8",
     "react": "^18",

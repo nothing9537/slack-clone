@@ -1,9 +1,10 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 import { FormFactory } from "@/shared/lib/components/form-factory";
 import { Button } from "@/shared/ui/button";
@@ -16,13 +17,18 @@ import { SignCardServices } from "../sign-card-wrapper/sign-card-services";
 import { GenerateSignInComponents } from "../../lib/consts/component-generators";
 
 interface SignInCardProps {
-  authAction: () => void; // change card into a sign-up card
+  switchCardsAction: () => void; // change card into a sign-up card
 }
 
-export const SignInCard: FC<SignInCardProps> = ({ authAction }) => {
+export const SignInCard: FC<SignInCardProps> = ({ switchCardsAction }) => {
   const form = useForm<SignInSchemaType>({ mode: "all", resolver: zodResolver(SignInSchema) });
+  const { signIn } = useAuthActions();
+  const githubAction = useCallback(() => signIn("github"), [signIn]);
+  const googleAction = useCallback(() => signIn("github"), [signIn]);
 
   const onSubmit = (data: SignInSchemaType) => {
+    console.log(data);
+
     return new Promise((resolve) => {
       setTimeout(resolve, 5000);
     });
@@ -36,7 +42,7 @@ export const SignInCard: FC<SignInCardProps> = ({ authAction }) => {
       footer={{
         description: "Don't have an account?",
         actionText: "Sign Up",
-        action: authAction,
+        action: switchCardsAction,
       }}
     >
       <form className="space-y-2.5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -49,7 +55,10 @@ export const SignInCard: FC<SignInCardProps> = ({ authAction }) => {
         </Button>
       </form>
       <Separator />
-      <SignCardServices />
+      <SignCardServices
+        githubAction={githubAction}
+        googleAction={googleAction}
+      />
     </SignCardWrapper>
   );
 };

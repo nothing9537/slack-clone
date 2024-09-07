@@ -13,10 +13,8 @@ export const AuthScreen: FC = () => {
   const setSignUp = useCallback(() => setSignFlow("signUp"), [setSignFlow]);
 
   return (
-    <div className="h-full flex items-center justify-center bg-[#5c3b58]">
-      <div className="md:h-auto md:w-[26rem]">
-        {signFlow === "signIn" ? <SignInCard authAction={setSignUp} /> : <SignUpCard authAction={setSignIn} />}
-      </div>
+    <div className="md:h-auto md:w-[26rem]">
+      {signFlow === "signIn" ? <SignInCard switchCardsAction={setSignUp} /> : <SignUpCard switchCardsAction={setSignIn} />}
     </div>
   );
 };
