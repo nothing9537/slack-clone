@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,6 +20,7 @@ interface SignInCardProps {
 
 export const SignUpCard: FC<SignInCardProps> = ({ switchCardsAction }) => {
   const form = useForm<SignUpSchemaType>({ mode: "all", resolver: zodResolver(SignUpSchema) });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <SignCardWrapper<SignUpSchemaType>
@@ -35,14 +36,17 @@ export const SignUpCard: FC<SignInCardProps> = ({ switchCardsAction }) => {
       <form className="space-y-2.5">
         <FormFactory<SignUpSchemaType>
           form={form}
-          components={GenerateSignUpComponents()}
+          components={GenerateSignUpComponents(isSubmitting)}
         />
-        <Button type="submit" className="w-full" size="lg">
+        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
           Continue
         </Button>
       </form>
       <Separator />
-      <SignCardServices />
+      <SignCardServices
+        isSubmitting={isSubmitting}
+        setIsSubmitting={setIsSubmitting}
+      />
     </SignCardWrapper>
   );
 };

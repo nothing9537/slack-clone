@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useCallback } from "react";
+import { FC, memo, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
@@ -20,11 +20,12 @@ interface SignInCardProps {
   switchCardsAction: () => void; // change card into a sign-up card
 }
 
-export const SignInCard: FC<SignInCardProps> = ({ switchCardsAction }) => {
+export const SignInCard: FC<SignInCardProps> = memo(({ switchCardsAction }) => {
   const form = useForm<SignInSchemaType>({ mode: "all", resolver: zodResolver(SignInSchema) });
   const { signIn } = useAuthActions();
   const githubAction = useCallback(() => signIn("github"), [signIn]);
-  const googleAction = useCallback(() => signIn("github"), [signIn]);
+  const googleAction = useCallback(() => signIn("google"), [signIn]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = (data: SignInSchemaType) => {
     console.log(data);
@@ -48,17 +49,19 @@ export const SignInCard: FC<SignInCardProps> = ({ switchCardsAction }) => {
       <form className="space-y-2.5" onSubmit={form.handleSubmit(onSubmit)}>
         <FormFactory<SignInSchemaType>
           form={form}
-          components={GenerateSignInComponents()}
+          components={GenerateSignInComponents(isSubmitting)}
         />
-        <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting}>
+        <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting || isSubmitting}>
           {form.formState.isSubmitting ? <Loader className="animate-spin" /> : "Continue"}
         </Button>
       </form>
       <Separator />
       <SignCardServices
+        isSubmitting={form.formState.isSubmitting || isSubmitting}
+        setIsSubmitting={setIsSubmitting}
         githubAction={githubAction}
         googleAction={googleAction}
       />
     </SignCardWrapper>
   );
-};
+});
