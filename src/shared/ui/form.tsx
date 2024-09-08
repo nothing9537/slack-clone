@@ -34,8 +34,10 @@ const FormField = <
 >({
     ...props
   }: ControllerProps<TFieldValues, TName>) => {
+  const memoized = React.useMemo(() => ({ name: props.name }), [props.name]);
+
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
+    <FormFieldContext.Provider value={memoized}>
       <Controller {...props} />
     </FormFieldContext.Provider>
   );
@@ -78,8 +80,10 @@ React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const id = React.useId();
 
+  const memoized = React.useMemo(() => ({ id }), [id]);
+
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={memoized}>
       <div ref={ref} className={cn("space-y-2", className)} {...props} />
     </FormItemContext.Provider>
   );

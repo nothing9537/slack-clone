@@ -1,6 +1,8 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-
 import { UseFormReturn } from "react-hook-form";
+
+import { isSignUpSchema } from "@/features/auth-cards/lib/utils/type-guards.utils";
+
 import { SignInSchemaType, SignUpSchemaType } from "../../types/auth-schemas.types";
 import { SignFlow } from "../../types/sign.types";
 
@@ -10,7 +12,16 @@ export const useSignService = (flow: SignFlow, form: UseFormReturn<IncomeFormTyp
   const { signIn } = useAuthActions();
 
   return (data: IncomeFormType) => {
-    return signIn("password", { ...data, flow })
+    const userData: { email: string; password: string; name?: string } = {
+      email: data.email,
+      password: data.password,
+    };
+
+    if (flow === "signUp" && isSignUpSchema(data)) {
+      userData.name = `${data.firstName} ${data.lastName}`;
+    }
+
+    return signIn("password", { ...userData, flow })
       .then(() => {
         // console.log(data);
       })
