@@ -1,42 +1,30 @@
 "use client";
 
-import { FC, memo, useCallback, useState } from "react";
+import { FC, memo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
-import { useAuthActions } from "@convex-dev/auth/react";
 
 import { FormFactory } from "@/shared/lib/components/form-factory";
 import { Button } from "@/shared/ui/button";
-import { Separator } from "@/shared/ui/separator";
 
 import { SignCardWrapper } from "../sign-card-wrapper/sign-card-wrapper";
 import { SignInSchemaType } from "../../model/types/auth-schemas.types";
 import { SignInSchema } from "../../lib/consts/auth-schemas.consts";
-import { SignCardServices } from "../sign-card-wrapper/sign-card-services";
 import { GenerateSignInComponents } from "../../lib/consts/component-generators";
+import { BaseSignCardProps } from "../../model/types/sign.types";
+import { useSignService } from "../../model/services/sign-service/sign-service";
 
-interface SignInCardProps {
-  switchCardsAction: () => void; // change card into a sign-up card
-}
-
-export const SignInCard: FC<SignInCardProps> = memo(({ switchCardsAction }) => {
+export const SignInCard: FC<BaseSignCardProps> = memo(({ switchCardsAction, flow }) => {
   const form = useForm<SignInSchemaType>({ mode: "all", resolver: zodResolver(SignInSchema) });
-  const { signIn } = useAuthActions();
-  const githubAction = useCallback(() => signIn("github"), [signIn]);
-  const googleAction = useCallback(() => signIn("google"), [signIn]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const onSubmit = (data: SignInSchemaType) => {
-    console.log(data);
-
-    return new Promise((resolve) => {
-      setTimeout(resolve, 5000);
-    });
-  };
+  const onSubmit = useSignService(flow, form);
 
   return (
     <SignCardWrapper
+      errorMessage={form.formState.errors.error?.message}
+      isSubmitting={isSubmitting}
+      setIsSubmitting={setIsSubmitting}
       headerText="Log-in to continue"
       descriptionText="Use your email or another service to continue."
       form={form}
@@ -55,13 +43,6 @@ export const SignInCard: FC<SignInCardProps> = memo(({ switchCardsAction }) => {
           {form.formState.isSubmitting ? <Loader className="animate-spin" /> : "Continue"}
         </Button>
       </form>
-      <Separator />
-      <SignCardServices
-        isSubmitting={form.formState.isSubmitting || isSubmitting}
-        setIsSubmitting={setIsSubmitting}
-        githubAction={githubAction}
-        googleAction={googleAction}
-      />
     </SignCardWrapper>
   );
 });
