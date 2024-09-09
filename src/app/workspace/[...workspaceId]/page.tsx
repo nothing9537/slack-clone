@@ -1,17 +1,26 @@
+"use client";
+
 import { FC } from "react";
 
-interface WorkspaceIDPageProps {
-  params: {
-    workspaceId: string;
-  };
-}
+import { UserButton } from "@/features/user-button";
+import { useWorkspaceId } from "@/shared/lib/hooks";
+import { useGetWorkspaceById } from "@/entities/workspace";
 
-const WorkspaceIDPage: FC<WorkspaceIDPageProps> = ({ params }) => {
+const WorkspaceIDPage: FC = () => {
+  const workspaceId = useWorkspaceId();
+
+  console.table({
+    workspaceId,
+  });
+
+  const { workspace } = useGetWorkspaceById({ id: workspaceId });
+
   return (
     <div>
       Workspace with ID:
       {" "}
-      {params.workspaceId}
+      {JSON.stringify(workspace)}
+      <UserButton />
     </div>
   );
 };

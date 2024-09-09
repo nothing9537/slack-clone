@@ -6,7 +6,7 @@ interface AuthLayoutProps {
 
 export const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className="h-full flex items-center justify-center bg-[#5c3b58]">
+    <div className="h-full flex items-center justify-center bg-[#5c3b58] dark:bg-zinc-900">
       {children}
     </div>
   );
