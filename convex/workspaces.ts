@@ -2,13 +2,43 @@ import { ConvexError, v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 import { mutation, query } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+
+const generateInvitationCode = () => {
+  const code = Array
+    .from({ length: 6 }, () => "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)])
+    .join("");
+
+  return code.toUpperCase();
+};
 
 export const getWorkspaces = query({
   args: {},
   handler: async (ctx) => {
-    const data = await ctx.db.query("workspaces").collect();
+    const userId = await getAuthUserId(ctx);
 
-    return data;
+    if (!userId) {
+      return [];
+    }
+
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_user_id", (q) => q.eq("userId", userId))
+      .collect();
+
+    const workspaceIds = members.map((m) => m.workspaceId);
+    const workspaces: ({ _id: Id<"workspaces">; _creationTime: number; name: string; userId: Id<"users">; joinCode: string; } | null)[] = [];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const workspaceId of workspaceIds) {
+      const workspace = await ctx.db.get(workspaceId);
+
+      if (workspace) {
+        workspaces.push(workspace);
+      }
+    }
+
+    return workspaces;
   },
 });
 
@@ -34,12 +64,19 @@ export const createWorkspace = mutation({
     }
 
     // TODO: implement invitation code later
-    const joinCode = "123456";
+
+    const joinCode = generateInvitationCode();
 
     const workspaceId = await ctx.db.insert("workspaces", {
       name: args.name,
       userId,
       joinCode,
+    });
+
+    await ctx.db.insert("members", {
+      userId,
+      workspaceId,
+      role: "admin",
     });
 
     return workspaceId;
@@ -55,6 +92,15 @@ export const getWorkspaceById = query({
 
     if (!userId) {
       throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", args.id).eq("userId", userId))
+      .unique();
+
+    if (!member) {
+      return null;
     }
 
     // TODO: Only workspace members should be able to access the workspace
