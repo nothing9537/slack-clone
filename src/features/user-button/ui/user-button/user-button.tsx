@@ -6,7 +6,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { useCurrentUser } from "@/shared/lib/hooks/use-current-user";
+import { useCurrentUser } from "@/shared/api/current-user";
 
 export const UserButton: FC = () => {
   const { data, isLoading } = useCurrentUser();

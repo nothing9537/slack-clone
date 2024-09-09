@@ -11,9 +11,9 @@ import { Button } from "@/shared/ui/button";
 import { SignCardWrapper } from "../sign-card-wrapper/sign-card-wrapper";
 import { SignInSchemaType } from "../../model/types/auth-schemas.types";
 import { SignInSchema } from "../../lib/consts/auth-schemas.consts";
-import { GenerateSignInComponents } from "../../lib/consts/component-generators";
+import { GenerateSignInComponents } from "../../lib/consts/component-generators.consts";
 import { BaseSignCardProps } from "../../model/types/sign.types";
-import { useSignService } from "../../model/services/sign-service/sign-service";
+import { useSignService } from "../../model/services/sign/sign.service";
 
 export const SignInCard: FC<BaseSignCardProps> = memo(({ switchCardsAction, flow }) => {
   const form = useForm<SignInSchemaType>({ mode: "all", resolver: zodResolver(SignInSchema) });

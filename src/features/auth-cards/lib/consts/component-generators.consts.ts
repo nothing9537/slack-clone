@@ -27,12 +27,14 @@ export const GenerateSignUpComponents = (isSubmitting: boolean): SignUpComponent
       className: "grid grid-cols-2 gap-2",
       components: [
         {
+          disabled: isSubmitting,
           type: "input",
           name: "firstName",
           placeholder: "First name",
           inputType: "text",
         },
         {
+          disabled: isSubmitting,
           type: "input",
           name: "lastName",
           placeholder: "Last name",
