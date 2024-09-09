@@ -8,7 +8,8 @@ import { toast } from "sonner";
 
 import { Form } from "@/shared/ui/form";
 import { Button } from "@/shared/ui/button";
-import { FormFactory } from "@/shared/lib/components/form-factory";
+import { FormFactory } from "@/shared/lib/components";
+import { useModal } from "@/shared/lib/hooks";
 
 import { CreateWorkspaceSchema } from "../../lib/consts/create-workspace-schema.consts";
 import { CreateWorkspaceSchemaType } from "../../model/types/create-workspace-schema.types";
@@ -16,6 +17,7 @@ import { useCreateWorkspace } from "../../model/services/create-workspace/create
 
 export const CreateWorkspaceForm: FC = () => {
   const form = useForm<CreateWorkspaceSchemaType>({ mode: "all", resolver: zodResolver(CreateWorkspaceSchema) });
+  const { onClose } = useModal();
   const router = useRouter();
 
   const onSubmit = useCreateWorkspace({
@@ -25,11 +27,13 @@ export const CreateWorkspaceForm: FC = () => {
       });
     },
     onSuccess(id, name) {
-      router.push(`/workspace/${id}`);
+      onClose();
 
       toast.success("Workspace action", {
         description: `Workspace: '${name}' has been created successfully!`,
       });
+
+      router.push(`/workspace/${id}`);
     },
   });
 
