@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Form } from "@/shared/ui/form";
 import { Separator } from "@/shared/ui/separator";
 
+import { Mounted } from "@/shared/lib/components";
 import { useSignActions } from "../../lib/hooks/use-sign-actions";
 import { SignCardServices } from "./sign-card-services";
 
@@ -29,44 +30,46 @@ export const SignCardWrapper = <T extends FieldValues>(props: SignCardWrapperPro
   const { googleAction, githubAction } = useSignActions();
 
   return (
-    <Card className="w-full h-full p-8">
-      <CardHeader className="px-0 pt-0">
-        <CardTitle>
-          {headerText}
-        </CardTitle>
-        <CardDescription>
-          {descriptionText}
-        </CardDescription>
-      </CardHeader>
-      {!!errorMessage && (
-        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive-foreground mb-6 dark:bg-destructive/80">
-          <TriangleAlert className="size-4" />
-          <p>{errorMessage}</p>
-        </div>
-      )}
-      <CardContent className="space-y-4 px-0 pb-0">
-        <Form {...form}>
-          {children}
-          <Separator />
-          <SignCardServices
-            githubAction={githubAction}
-            googleAction={googleAction}
-            isSubmitting={isSubmitting}
-            setIsSubmitting={setIsSubmitting}
-          />
-        </Form>
-        <p className="text-sm text-muted-foreground">
-          {footer.description}
-          {" "}
-          <button
-            type="button"
-            className="text-sky-700 hover:underline cursor-pointer"
-            onClick={footer.action}
-          >
-            {footer.actionText}
-          </button>
-        </p>
-      </CardContent>
-    </Card>
+    <Mounted>
+      <Card className="w-full h-full p-8">
+        <CardHeader className="px-0 pt-0">
+          <CardTitle>
+            {headerText}
+          </CardTitle>
+          <CardDescription>
+            {descriptionText}
+          </CardDescription>
+        </CardHeader>
+        {!!errorMessage && (
+          <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive-foreground mb-6 dark:bg-destructive/80">
+            <TriangleAlert className="size-4" />
+            <p>{errorMessage}</p>
+          </div>
+        )}
+        <CardContent className="space-y-4 px-0 pb-0">
+          <Form {...form}>
+            {children}
+            <Separator />
+            <SignCardServices
+              githubAction={githubAction}
+              googleAction={googleAction}
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
+            />
+          </Form>
+          <p className="text-sm text-muted-foreground">
+            {footer.description}
+            {" "}
+            <button
+              type="button"
+              className="text-sky-700 hover:underline cursor-pointer"
+              onClick={footer.action}
+            >
+              {footer.actionText}
+            </button>
+          </p>
+        </CardContent>
+      </Card>
+    </Mounted>
   );
 };

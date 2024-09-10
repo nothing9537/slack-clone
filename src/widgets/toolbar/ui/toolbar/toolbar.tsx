@@ -2,12 +2,12 @@ import { FC } from "react";
 import { Info, Loader, Search } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
-import { useWorkspaceId } from "@/shared/lib/hooks";
+import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { useGetWorkspaceById } from "@/entities/workspace";
 
 export const Toolbar: FC = () => {
-  const workspaceId = useWorkspaceId();
-  const { workspace, isLoading } = useGetWorkspaceById({ id: workspaceId });
+  const workspaceId = useWorkspaceIdParams();
+  const [workspace, isLoading] = useGetWorkspaceById({ id: workspaceId });
 
   return (
     <nav className="bg-[#481349] flex items-center justify-between h-10 p-1.5">
@@ -16,7 +16,7 @@ export const Toolbar: FC = () => {
         <Button size="sm" className="bg-accent/25 hover:bg-accent-25 w-full justify-start h-7 px-2">
           <Search className="size-4 text-white mr-2" />
           <span className="text-white text-sm flex items-center gap-2">
-            Search
+            Search in:
             {" "}
             {isLoading ? (
               <Loader className="size-4 animate-spin" />

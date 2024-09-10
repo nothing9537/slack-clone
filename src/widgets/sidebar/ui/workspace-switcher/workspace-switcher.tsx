@@ -6,19 +6,19 @@ import { useRouter } from "next/navigation";
 
 import { useGetWorkspaceById, useGetWorkspaces } from "@/entities/workspace";
 
-import { useModal, useWorkspaceId } from "@/shared/lib/hooks";
+import { useModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { Button } from "@/shared/ui/button";
 
 import { RestWorkspaces } from "../rest-workspaces/rest-workspaces";
 
 export const WorkspaceSwitcher: FC = () => {
-  const workspaceId = useWorkspaceId();
+  const workspaceId = useWorkspaceIdParams();
   const router = useRouter();
   const { onOpen } = useModal();
 
-  const { workspaces } = useGetWorkspaces();
-  const { workspace, isLoading: isWorkspaceLoading } = useGetWorkspaceById({ id: workspaceId });
+  const [workspaces] = useGetWorkspaces();
+  const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ id: workspaceId });
 
   const filteredWorkspaces = useMemo(() => workspaces?.filter((ws) => ws?._id !== workspaceId), [workspaces, workspaceId]);
 

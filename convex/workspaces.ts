@@ -63,8 +63,6 @@ export const createWorkspace = mutation({
       throw new ConvexError({ message: `Workspace with name: '${args.name}' already exists.` });
     }
 
-    // TODO: implement invitation code later
-
     const joinCode = generateInvitationCode();
 
     const workspaceId = await ctx.db.insert("workspaces", {
@@ -102,8 +100,6 @@ export const getWorkspaceById = query({
     if (!member) {
       return null;
     }
-
-    // TODO: Only workspace members should be able to access the workspace
 
     const workspace = await ctx.db.get(args.id);
 

@@ -5,7 +5,7 @@ import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { Toaster } from "@/shared/ui/sonner";
 import { ConvexClientProvider } from "./providers/convex-client-provider";
 import { ModalsProvider } from "./providers/modals-provider";
-// import { ThemeProvider } from "./providers/theme-provider";
+import { ThemeProvider } from "./providers/theme-provider";
 
 import type { Metadata } from "next";
 
@@ -27,18 +27,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <ConvexAuthNextjsServerProvider>
       <html lang="en">
         <body className={inter.className}>
-          <ConvexClientProvider>
-            {/* <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            > */}
-            <ModalsProvider />
-            <Toaster />
-            {children}
-            {/* </ThemeProvider> */}
-          </ConvexClientProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+          >
+            <ConvexClientProvider>
+              <ModalsProvider />
+              <Toaster />
+              {children}
+            </ConvexClientProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>

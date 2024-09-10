@@ -4,12 +4,12 @@ import { FC, useCallback } from "react";
 import { Loader, LogOut } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 
+import { useCurrentUser } from "@/entities/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { useCurrentUser } from "@/shared/api/current-user";
 
 export const UserButton: FC = () => {
-  const { data, isLoading } = useCurrentUser();
+  const [currentUser, isLoading] = useCurrentUser();
   const { signOut } = useAuthActions();
   const handleSignOut = useCallback(() => signOut(), [signOut]);
 
@@ -19,11 +19,11 @@ export const UserButton: FC = () => {
     );
   }
 
-  if (!data) {
+  if (!currentUser) {
     return null;
   }
 
-  const { name, image } = data;
+  const { name, image } = currentUser;
   const avatarFallback = name!.charAt(0).toUpperCase();
 
   return (

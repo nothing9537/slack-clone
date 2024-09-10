@@ -2,19 +2,19 @@
 
 import { FC } from "react";
 
-import { useWorkspaceId } from "@/shared/lib/hooks";
+import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { useGetWorkspaceById } from "@/entities/workspace";
 
 const WorkspaceIDPage: FC = () => {
-  const workspaceId = useWorkspaceId();
+  const workspaceId = useWorkspaceIdParams();
 
-  const { workspace } = useGetWorkspaceById({ id: workspaceId });
+  const [workspace] = useGetWorkspaceById({ id: workspaceId });
 
   return (
-    <div>
+    <div className="w-full h-full">
       Workspace with ID:
       {" "}
-      {workspace?.name}
+      {workspace?._id}
     </div>
   );
 };

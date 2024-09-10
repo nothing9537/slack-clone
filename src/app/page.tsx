@@ -2,16 +2,22 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 import { UserButton } from "@/features/user-button";
 import { useGetWorkspaces } from "@/entities/workspace";
 import { useModal } from "@/shared/lib/hooks/use-modal";
 
 const Page = () => {
-  const { workspaces, isLoading } = useGetWorkspaces();
+  const [workspaces, isLoading] = useGetWorkspaces();
   const { type, isOpen, onOpen, onClose } = useModal();
   const workspaceId = useMemo(() => workspaces?.[0]?._id, [workspaces]);
   const router = useRouter();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme("light");
+  }, [setTheme]);
 
   useEffect(() => {
     if (isLoading) {

@@ -1,5 +1,17 @@
-import { useGetWorkspaceById } from "../services/get-workspace/get-workspace-by-id";
-import { useGetWorkspaces } from "../services/get-workspace/get-workspaces";
+import { Id } from "@convex/_generated/dataModel";
 
-export type Workspace = ReturnType<typeof useGetWorkspaceById>["workspace"];
-export type Workspaces = ReturnType<typeof useGetWorkspaces>["workspaces"];
+export type Workspace = {
+  _id: Id<"workspaces">;
+  _creationTime: number;
+  name: string;
+  userId: Id<"users">;
+  joinCode: string;
+} | null | undefined;
+
+export type Workspaces = ({
+  _id: Id<"workspaces">;
+  _creationTime: number;
+  name: string;
+  userId: Id<"users">;
+  joinCode: string;
+} | null)[] | undefined;
