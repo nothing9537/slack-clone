@@ -106,3 +106,78 @@ export const getWorkspaceById = query({
     return workspace;
   },
 });
+
+export const updateWorkspace = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", args.workspaceId).eq("userId", userId))
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const existingWorkspace = await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .first();
+
+    if (existingWorkspace) {
+      throw new ConvexError({ message: `Workspace with name: '${args.name}' already exists.` });
+    }
+
+    await ctx.db.patch(args.workspaceId, { name: args.name });
+
+    return args.workspaceId;
+  },
+});
+
+export const deleteWorkspace = mutation({
+  args: {
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", args.workspaceId).eq("userId", userId))
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const [members] = await Promise.all([
+      ctx.db
+        .query("members")
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
+        .collect(),
+    ]);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const member of members) {
+      await ctx.db.delete(member._id);
+    }
+
+    await ctx.db.delete(args.workspaceId);
+
+    return args.workspaceId;
+  },
+});

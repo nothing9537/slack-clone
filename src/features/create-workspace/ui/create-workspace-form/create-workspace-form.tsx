@@ -26,7 +26,7 @@ export const CreateWorkspaceForm: FC = () => {
         description: errorMessage,
       });
     },
-    onSuccess(id, name) {
+    onSuccess(id, { name }) {
       onClose();
 
       toast.success("Workspace action", {

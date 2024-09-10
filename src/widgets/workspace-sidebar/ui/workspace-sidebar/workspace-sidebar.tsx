@@ -1,11 +1,12 @@
 import { FC } from "react";
 import { AlertTriangle, Loader } from "lucide-react";
 
-import { useGetWorkspaceById, WorkspaceHeader } from "@/entities/workspace";
 import { useCurrentMember, useCurrentMemberIsAdmin } from "@/entities/member";
+import { useGetWorkspaceById } from "@/entities/workspace";
 import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 
 import { LoadingFallback } from "../loading-fallback/loading-fallback";
+import { WorkspaceHeader } from "../workspace-sidebar-header/workspace-sidebar-header";
 
 export const WorkspaceSidebar: FC = () => {
   const workspaceId = useWorkspaceIdParams();

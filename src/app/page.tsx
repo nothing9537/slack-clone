@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 
 import { UserButton } from "@/features/user-button";
 import { useGetWorkspaces } from "@/entities/workspace";
@@ -13,11 +13,11 @@ const Page = () => {
   const { type, isOpen, onOpen, onClose } = useModal();
   const workspaceId = useMemo(() => workspaces?.[0]?._id, [workspaces]);
   const router = useRouter();
-  const { setTheme } = useTheme();
+  // const { setTheme } = useTheme();
 
-  useEffect(() => {
-    setTheme("light");
-  }, [setTheme]);
+  // useEffect(() => {
+  //   setTheme("light");
+  // }, [setTheme]);
 
   useEffect(() => {
     if (isLoading) {
@@ -25,8 +25,8 @@ const Page = () => {
     }
 
     if (workspaceId) {
-      router.replace(`/workspace/${workspaceId}`);
       onClose();
+      router.replace(`/workspace/${workspaceId}`);
     } else {
       onOpen("workspaceCreationModal");
       if (type === "workspaceCreationModal" && !isOpen) {

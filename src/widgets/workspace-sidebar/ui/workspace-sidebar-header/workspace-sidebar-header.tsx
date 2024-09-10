@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { ChevronDown, ListFilter, SquarePen } from "lucide-react";
 
+import { Workspace } from "@/entities/workspace";
 import { Button } from "@/shared/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-
 import { Hint } from "@/shared/ui/hint";
-import { Workspace } from "../../model/types/workspace.types";
+
 import { AdminActionsView } from "../admin-actions-view/admin-actions-view";
 
 interface WorkspaceHeaderProps {

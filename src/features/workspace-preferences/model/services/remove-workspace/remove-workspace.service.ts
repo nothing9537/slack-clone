@@ -4,15 +4,17 @@ import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 
 import { api } from "@convex/_generated/api";
-import { CreateWorkspaceOptions, CreateWorkspaceRequestType } from "../../types/create-workspace-service.types";
+import { Id } from "@convex/_generated/dataModel";
 
-export const useCreateWorkspace = (options?: CreateWorkspaceOptions) => {
-  const mutation = useMutation(api.workspaces.createWorkspace);
+import { RemoveWorkspaceOptions } from "../../types/workspace-services.types";
 
-  const mutate = useCallback(async (values: CreateWorkspaceRequestType) => {
+export const useRemoveWorkspace = (workspaceId: Id<"workspaces">, options?: RemoveWorkspaceOptions) => {
+  const mutation = useMutation(api.workspaces.deleteWorkspace);
+
+  const mutate = useCallback(async () => {
     try {
-      const response = await mutation(values);
-      options?.onSuccess?.(response, values);
+      const response = await mutation({ workspaceId });
+      options?.onSuccess?.(response);
 
       return response;
     } catch (error) {
@@ -26,7 +28,7 @@ export const useCreateWorkspace = (options?: CreateWorkspaceOptions) => {
     } finally {
       options?.onSettled?.();
     }
-  }, [mutation, options]);
+  }, [mutation, options, workspaceId]);
 
   return mutate;
 };
