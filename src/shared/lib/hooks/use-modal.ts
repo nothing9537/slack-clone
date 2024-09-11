@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 
 import { ModalData } from "../../types";
 
-type ModalType = "workspaceCreationModal" | "workspacePreferencesModal";
+type ModalType = "workspaceCreationModal" | "workspacePreferencesModal" | "createChannelModal";
 
 interface ModalStore {
   /**
@@ -31,7 +31,7 @@ export const useModal = create<ModalStore>()(devtools((set) => ({
  * You can pass a generic type to this hook to get the modal data with the specified type.
  * @returns Modal store with generic modal data type.
  */
-export const useModalGeneric = <T extends ModalData = ModalData>() => {
+export const useGenericModal = <T extends ModalData = ModalData>() => {
   const { modalData, ...args } = useModal();
 
   return { ...args, modalData: modalData as T };

@@ -57,7 +57,7 @@ export const createWorkspace = mutation({
       .query("workspaces")
       .filter((q) => q.eq(q.field("userId"), userId))
       .filter((q) => q.eq(q.field("name"), args.name))
-      .first();
+      .unique();
 
     if (existingWorkspace) {
       throw new ConvexError({ message: `Workspace with name: '${args.name}' already exists.` });

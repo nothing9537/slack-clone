@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import { useGetWorkspaceById } from "@/entities/workspace";
-import { useModalGeneric, useWorkspaceIdParams } from "@/shared/lib/hooks";
+import { useGenericModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { WorkspacePreferencesModalData } from "@/shared/types";
 
@@ -9,7 +9,7 @@ import { EditWorkspace } from "./edit-workspace";
 import { DeleteWorkspace } from "./delete-workspace";
 
 export const WorkspacePreferencesModal: FC = () => {
-  const { type, onClose, isOpen } = useModalGeneric<WorkspacePreferencesModalData>();
+  const { type, onClose, isOpen } = useGenericModal<WorkspacePreferencesModalData>();
   const workspaceId = useWorkspaceIdParams();
   const [workspace, isLoading] = useGetWorkspaceById({ workspaceId });
 

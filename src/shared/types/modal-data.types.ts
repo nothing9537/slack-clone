@@ -4,8 +4,8 @@ export interface WorkspacePreferencesModalData {
   workspace?: NonNullable<Workspace>;
 }
 
-export interface Foo {
-  foo: string;
+export interface CreateChannelModalData {
+  workspace?: NonNullable<Workspace>;
 }
 
-export type ModalData = WorkspacePreferencesModalData | Foo;
+export type ModalData = WorkspacePreferencesModalData | CreateChannelModalData;

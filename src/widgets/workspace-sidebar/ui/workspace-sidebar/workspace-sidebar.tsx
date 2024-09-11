@@ -3,7 +3,7 @@ import { AlertTriangle, Loader, MessageSquareIcon, SendHorizonal } from "lucide-
 
 import { MembersList, useCurrentMember, useCurrentMemberIsAdmin, useGetMembers } from "@/entities/member";
 import { useGetWorkspaceById } from "@/entities/workspace";
-import { useWorkspaceIdParams } from "@/shared/lib/hooks";
+import { useModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
 
 import { ChannelItem, ChannelsList, useGetChannels } from "@/entities/channel";
 import { LoadingFallback } from "../workspace-sidebar-header/loading-fallback";
@@ -12,6 +12,7 @@ import { WorkspaceSection } from "../workspace-section/workspace-section";
 
 export const WorkspaceSidebar: FC = () => {
   const workspaceId = useWorkspaceIdParams();
+  const { onOpen } = useModal();
 
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
   const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ workspaceId });
@@ -56,7 +57,7 @@ export const WorkspaceSidebar: FC = () => {
       <WorkspaceSection
         label="Channels"
         hint="Create a new channel"
-        onNew={() => { }}
+        onNew={isAdmin ? () => onOpen("createChannelModal", { workspace }) : undefined}
       >
         <ChannelsList
           items={channels}

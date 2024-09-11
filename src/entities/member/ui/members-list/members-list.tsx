@@ -28,7 +28,7 @@ export const MembersList: FC<MembersListProps> = ({ items, isLoading, workspaceI
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {items!.map(renderMember(workspaceId))}
     </div>
   );
