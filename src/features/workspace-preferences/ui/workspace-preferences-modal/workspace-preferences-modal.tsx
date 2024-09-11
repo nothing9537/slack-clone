@@ -24,7 +24,7 @@ export const WorkspacePreferencesModal: FC = () => {
       <DialogContent className="p-0 bg-gray-50 overflow-hidden">
         <DialogHeader className="p-4 border-b bg-white">
           <DialogTitle>
-            Title
+            {workspace?.name}
           </DialogTitle>
         </DialogHeader>
         <div className="px-2 pb-4 flex flex-col gap-y-2">

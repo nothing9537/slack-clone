@@ -54,27 +54,27 @@ export const EditWorkspace: FC<EditWorkspaceProps> = ({ workspace }) => {
           <DialogTitle>
             Rename this workspace
           </DialogTitle>
-          <Form {...form}>
-            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-              <FormFactory
-                form={form}
-                components={[
-                  { type: "input", name: "name", placeholder: "Enter new workspace name" },
-                ]}
-              />
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  Save
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
         </DialogHeader>
+        <Form {...form}>
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <FormFactory
+              form={form}
+              components={[
+                { type: "input", name: "name", placeholder: "Enter new workspace name" },
+              ]}
+            />
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="outline" disabled={form.formState.isSubmitting}>
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                Save
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

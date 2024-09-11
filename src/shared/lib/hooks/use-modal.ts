@@ -6,9 +6,15 @@ import { ModalData } from "../../types";
 type ModalType = "workspaceCreationModal" | "workspacePreferencesModal";
 
 interface ModalStore {
+  /**
+   * Modal type, which is used to determine which modal should be opened.
+  */
   type: ModalType | null;
   isOpen: boolean;
   onOpen: (type: ModalType, modalData?: ModalData) => void;
+  /**
+   * Closes current opened modal, which regulated by `type` and `isOpen` properties and store.
+  */
   onClose: () => void;
   modalData: ModalData | null;
 }
@@ -21,6 +27,10 @@ export const useModal = create<ModalStore>()(devtools((set) => ({
   onClose: () => set({ type: null, isOpen: false, modalData: null }),
 })));
 
+/**
+ * You can pass a generic type to this hook to get the modal data with the specified type.
+ * @returns Modal store with generic modal data type.
+ */
 export const useModalGeneric = <T extends ModalData = ModalData>() => {
   const { modalData, ...args } = useModal();
 
