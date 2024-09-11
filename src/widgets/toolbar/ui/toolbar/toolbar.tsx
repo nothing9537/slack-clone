@@ -7,7 +7,7 @@ import { useGetWorkspaceById } from "@/entities/workspace";
 
 export const Toolbar: FC = () => {
   const workspaceId = useWorkspaceIdParams();
-  const [workspace, isLoading] = useGetWorkspaceById({ id: workspaceId });
+  const [workspace, isLoading] = useGetWorkspaceById({ workspaceId });
 
   return (
     <nav className="bg-[#481349] flex items-center justify-between h-10 p-1.5">

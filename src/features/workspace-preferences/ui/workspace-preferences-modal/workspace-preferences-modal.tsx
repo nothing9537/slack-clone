@@ -11,11 +11,11 @@ import { DeleteWorkspace } from "./delete-workspace";
 export const WorkspacePreferencesModal: FC = () => {
   const { type, onClose, isOpen } = useModalGeneric<WorkspacePreferencesModalData>();
   const workspaceId = useWorkspaceIdParams();
-  const [workspace, isLoading] = useGetWorkspaceById({ id: workspaceId });
+  const [workspace, isLoading] = useGetWorkspaceById({ workspaceId });
 
   const isModalOpen = type === "workspacePreferencesModal" && isOpen;
 
-  if (isLoading) {
+  if (isLoading || !workspace) {
     return null;
   }
 
@@ -24,16 +24,12 @@ export const WorkspacePreferencesModal: FC = () => {
       <DialogContent className="p-0 bg-gray-50 overflow-hidden">
         <DialogHeader className="p-4 border-b bg-white">
           <DialogTitle>
-            {workspace?.name}
+            {workspace.name}
           </DialogTitle>
         </DialogHeader>
         <div className="px-2 pb-4 flex flex-col gap-y-2">
-          {workspace && (
-            <>
-              <EditWorkspace workspace={workspace} />
-              <DeleteWorkspace workspace={workspace} />
-            </>
-          )}
+          <EditWorkspace workspace={workspace} />
+          <DeleteWorkspace workspace={workspace} />
         </div>
       </DialogContent>
     </Dialog>

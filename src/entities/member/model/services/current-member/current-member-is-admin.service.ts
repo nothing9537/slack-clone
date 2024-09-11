@@ -2,10 +2,10 @@ import { useQuery } from "convex/react";
 
 import { api } from "@convex/_generated/api";
 
-import { CurrentMemberParams } from "../../types/services/current-member.types";
+import { Id } from "@convex/_generated/dataModel";
 
-export const useCurrentMemberIsAdmin = ({ workspaceId }: CurrentMemberParams): boolean => {
-  const currentMemberIsAdmin = useQuery(api.members.wetherCurrentWorkspaceMemberAdmin, { workspaceId });
+export const useCurrentMemberIsAdmin = (params: { workspaceId: Id<"workspaces"> }): boolean => {
+  const currentMemberIsAdmin = useQuery(api.members.wetherCurrentWorkspaceMemberAdmin, params);
 
   return Boolean(currentMemberIsAdmin);
 };

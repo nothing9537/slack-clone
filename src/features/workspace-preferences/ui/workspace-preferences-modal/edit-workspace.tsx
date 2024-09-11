@@ -19,7 +19,7 @@ interface EditWorkspaceProps {
 
 export const EditWorkspace: FC<EditWorkspaceProps> = ({ workspace }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const form = useForm<UpdateWorkspaceSchemaType>({ mode: "all", resolver: zodResolver(UpdateWorkspaceSchema) });
+  const form = useForm<UpdateWorkspaceSchemaType>({ mode: "onBlur", resolver: zodResolver(UpdateWorkspaceSchema) });
 
   const onSubmit = useMutateWorkspace(workspace._id, {
     onError(errorMessage) {

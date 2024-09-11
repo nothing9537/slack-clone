@@ -77,6 +77,11 @@ export const createWorkspace = mutation({
       role: "admin",
     });
 
+    await ctx.db.insert("channels", {
+      name: "general",
+      workspaceId,
+    });
+
     return workspaceId;
   },
 });
@@ -164,17 +169,20 @@ export const deleteWorkspace = mutation({
       throw new ConvexError({ message: "Unauthorized." });
     }
 
-    const [members] = await Promise.all([
+    const [members, channels] = await Promise.all([
       ctx.db
         .query("members")
         .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
         .collect(),
+      ctx.db
+        .query("channels")
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
+        .collect(),
     ]);
 
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const member of members) {
-      await ctx.db.delete(member._id);
-    }
+    const entitiesToDelete = [...members, ...channels];
+
+    await Promise.all(entitiesToDelete.map((entity) => ctx.db.delete(entity._id)));
 
     await ctx.db.delete(args.workspaceId);
 

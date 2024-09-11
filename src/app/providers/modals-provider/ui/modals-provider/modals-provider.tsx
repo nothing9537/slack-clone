@@ -15,9 +15,9 @@ export const ModalsProvider: FC = () => {
   return (
     <Mounted>
       <>
+        <WorkspaceCreationModal />
         {workspaceId && (
           <>
-            <WorkspaceCreationModal />
             <WorkspacePreferencesModal />
           </>
         )}

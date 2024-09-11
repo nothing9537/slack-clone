@@ -1,4 +1,4 @@
-import { Id } from "@convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 
 export type Member = {
   _id: Id<"members">;
@@ -15,3 +15,6 @@ export type Members = ({
   userId: Id<"users">;
   role: "admin" | "member";
 } | null)[] | undefined;
+
+export type PopulatedMember = { user: Doc<"users"> } & Doc<"members">;
+export type PopulatedMembers = PopulatedMember[] | undefined;

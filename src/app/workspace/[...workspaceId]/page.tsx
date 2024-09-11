@@ -8,7 +8,7 @@ import { useGetWorkspaceById } from "@/entities/workspace";
 const WorkspaceIDPage: FC = () => {
   const workspaceId = useWorkspaceIdParams();
 
-  const [workspace] = useGetWorkspaceById({ id: workspaceId });
+  const [workspace] = useGetWorkspaceById({ workspaceId });
 
   return (
     <div className="w-full h-full">

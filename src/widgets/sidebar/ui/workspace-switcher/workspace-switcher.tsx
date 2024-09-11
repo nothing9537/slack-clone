@@ -18,7 +18,7 @@ export const WorkspaceSwitcher: FC = () => {
   const { onOpen } = useModal();
 
   const [workspaces] = useGetWorkspaces();
-  const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ id: workspaceId });
+  const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ workspaceId });
 
   const filteredWorkspaces = useMemo(() => workspaces?.filter((ws) => ws?._id !== workspaceId), [workspaces, workspaceId]);
 

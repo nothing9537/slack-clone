@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { Hint } from "@/shared/ui/hint";
 
-import { AdminActionsView } from "../admin-actions-view/admin-actions-view";
+import { AdminActionsView } from "./admin-actions-view";
 
 interface WorkspaceHeaderProps {
   workspace: NonNullable<Workspace>;
@@ -15,7 +15,7 @@ interface WorkspaceHeaderProps {
 
 export const WorkspaceHeader: FC<WorkspaceHeaderProps> = ({ workspace, isAdmin }) => {
   return (
-    <div className="flex items-center justify-between px-4 h-12 gap-0.5 flex-wrap">
+    <div className="flex items-center justify-between px-4 min-h-12 gap-0.5 flex-wrap">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
