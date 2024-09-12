@@ -7,24 +7,28 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/shared/u
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
+  toolbar?: ReactNode;
+  sidebar?: ReactNode;
+  workspaceSidebar?: ReactNode;
 }
 
-export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = ({ children }) => {
+export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = ({ children, toolbar, sidebar, workspaceSidebar }) => {
   return (
     <div className="h-full">
-      <Toolbar />
+      {toolbar || <Toolbar />}
       <div className="flex h-[calc(100vh-40px)]">
-        <Sidebar />
+        {sidebar || <Sidebar />}
         <ResizablePanelGroup direction="horizontal" autoSaveId="workspace-resizable-layout">
           <ResizablePanel
             defaultSize={20}
             minSize={11}
             className="bg-[#5e2c5f]"
           >
-            <WorkspaceSidebar />
+            {workspaceSidebar || <WorkspaceSidebar />}
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel
+            defaultSize={140}
             minSize={20}
           >
             {children}

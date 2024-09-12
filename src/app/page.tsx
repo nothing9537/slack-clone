@@ -4,7 +4,10 @@ import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 
-import { UserButton } from "@/features/user-button";
+import { WorkspaceLayout } from "@/pages-layer/workspace";
+import { WorkspaceSidebarSkeleton } from "@/widgets/workspace-sidebar";
+import { ToolbarSkeleton } from "@/widgets/toolbar";
+import { SidebarSkeleton } from "@/widgets/sidebar";
 import { useGetWorkspaces } from "@/entities/workspace";
 import { useModal } from "@/shared/lib/hooks/use-modal";
 
@@ -36,9 +39,13 @@ const Page = () => {
   }, [isLoading, workspaceId, onOpen, isOpen, type, router, onClose]);
 
   return (
-    <div>
-      <UserButton />
-    </div>
+    <WorkspaceLayout
+      toolbar={<ToolbarSkeleton />}
+      sidebar={<SidebarSkeleton />}
+      workspaceSidebar={<WorkspaceSidebarSkeleton />}
+    >
+      {null}
+    </WorkspaceLayout>
   );
 };
 
