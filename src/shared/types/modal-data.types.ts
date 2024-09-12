@@ -8,4 +8,8 @@ export interface CreateChannelModalData {
   workspace?: NonNullable<Workspace>;
 }
 
-export type ModalData = WorkspacePreferencesModalData | CreateChannelModalData;
+export interface WorkspaceInviteModalData {
+  workspace?: NonNullable<Workspace>;
+}
+
+export type ModalData = WorkspacePreferencesModalData | CreateChannelModalData | WorkspaceInviteModalData;

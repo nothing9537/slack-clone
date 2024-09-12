@@ -5,6 +5,7 @@ import { FC } from "react";
 import { WorkspaceCreationModal } from "@/features/create-workspace";
 import { WorkspacePreferencesModal } from "@/features/workspace-preferences";
 import { CreateChannelModal } from "@/features/create-channel";
+import { InviteModal } from "@/features/invite";
 
 import { Mounted } from "@/shared/lib/components/mounted";
 import { useWorkspaceIdParams } from "@/shared/lib/hooks";
@@ -17,6 +18,7 @@ export const ModalsProvider: FC = () => {
       <WorkspaceCreationModal />
       {workspaceId && (
         <>
+          <InviteModal />
           <WorkspacePreferencesModal />
           <CreateChannelModal />
         </>

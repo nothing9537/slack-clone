@@ -42,7 +42,7 @@ export const useConfirmModal = (params: UseConfirmModalParams): [() => React.JSX
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="pt-2">
-          <DialogClose>
+          <DialogClose asChild>
             <Button variant="outline">
               Cancel
             </Button>

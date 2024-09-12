@@ -15,7 +15,11 @@ interface DeleteWorkspaceProps {
 export const DeleteWorkspace: FC<DeleteWorkspaceProps> = ({ workspace }) => {
   const { onClose } = useModal();
   const router = useRouter();
-  const [DeleteWorkspaceConfirmModal, confirm] = useConfirmModal({ title: "Are you sure?", description: "This action cannot be undone." });
+  const [DeleteWorkspaceConfirmModal, confirm] = useConfirmModal({
+    title: "Are you sure?",
+    description: `All data from this workspace will be deleted forever. 
+    This action cannot be undone.`,
+  });
 
   const removeWorkspace = useRemoveWorkspace(workspace._id, {
     onSuccess: () => {

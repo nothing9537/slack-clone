@@ -1,7 +1,8 @@
 import { FC, useCallback } from "react";
 
-import { DropdownMenuItem, DropdownMenuSeparator } from "@/shared/ui/dropdown-menu";
+import { InviteModal } from "@/features/invite";
 import { Workspace } from "@/entities/workspace";
+import { DropdownMenuItem, DropdownMenuSeparator } from "@/shared/ui/dropdown-menu";
 import { useModal } from "@/shared/lib/hooks";
 
 interface AdminActionsViewProps {
@@ -15,8 +16,9 @@ export const AdminActionsView: FC<AdminActionsViewProps> = ({ workspace }) => {
 
   return (
     <>
+      <InviteModal />
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="cursor-pointer py-2" onClick={() => { }}>
+      <DropdownMenuItem className="cursor-pointer py-2" onClick={() => onOpen("inviteModal", { workspace })}>
         Invite people to
         {" "}
         {workspace.name}
