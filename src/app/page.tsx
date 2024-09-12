@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 
@@ -11,7 +11,7 @@ import { SidebarSkeleton } from "@/widgets/sidebar";
 import { useGetWorkspaces } from "@/entities/workspace";
 import { useModal } from "@/shared/lib/hooks/use-modal";
 
-const Page = () => {
+const Page: FC = () => {
   const [workspaces, isLoading] = useGetWorkspaces();
   const { type, isOpen, onOpen, onClose } = useModal();
   const workspaceId = useMemo(() => workspaces?.[0]?._id, [workspaces]);

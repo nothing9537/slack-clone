@@ -41,7 +41,7 @@ export const SignCardWrapper = <T extends FieldValues>(props: SignCardWrapperPro
           </CardDescription>
         </CardHeader>
         {!!errorMessage && (
-          <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive-foreground mb-6 dark:bg-destructive/80">
+          <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6 dark:bg-destructive/80">
             <TriangleAlert className="size-4" />
             <p>{errorMessage}</p>
           </div>
