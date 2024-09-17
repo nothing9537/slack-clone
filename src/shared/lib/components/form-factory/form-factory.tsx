@@ -14,6 +14,7 @@ import { RenderCustomLayout } from "./render/render-custom-layout";
 
 // utils
 import { isHideKeysMatchValues } from "./utils/is-hide-keys-match-values";
+import { RenderInputOTP } from "./render/render-input-otp";
 
 export const FormFactory = typedMemo(<T extends FieldValues>(props: FormFactoryProps<T>): ReactNode[] => {
   const { form, components } = props;
@@ -26,6 +27,8 @@ export const FormFactory = typedMemo(<T extends FieldValues>(props: FormFactoryP
     switch (component.type) {
       case "input":
         return <RenderInput key={component.name} form={form} component={component} />;
+      case "input-otp":
+        return <RenderInputOTP key={component.name} form={form} component={component} />;
       case "custom":
         return <RenderCustomComponent key={component.name} component={component} />;
       case "separator":

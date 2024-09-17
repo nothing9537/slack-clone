@@ -2,7 +2,7 @@ import { FieldValues, Path, PathValue } from "react-hook-form";
 
 import { FormFieldOverviewProps } from "../form-field-wrapper";
 
-type ComponentType = "input" | "custom" | "separator" | "custom-layout";
+type ComponentType = "input" | "custom" | "separator" | "custom-layout" | "input-otp";
 
 interface HideType<T extends FieldValues> {
   key: Path<T>;

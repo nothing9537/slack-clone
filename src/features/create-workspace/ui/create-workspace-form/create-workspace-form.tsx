@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import Link from "next/link";
 import { Form } from "@/shared/ui/form";
 import { Button } from "@/shared/ui/button";
 import { FormFactory } from "@/shared/lib/components";
@@ -52,7 +53,12 @@ export const CreateWorkspaceForm: FC = () => {
               type: "custom",
               name: "create-workspace-form-create-button",
               element: (
-                <div className="flex justify-end">
+                <div className="flex justify-between">
+                  <Link href="/join">
+                    <Button variant="outline" onClick={onClose}>
+                      Go to join page
+                    </Button>
+                  </Link>
                   <Button type="submit" disabled={form.formState.isSubmitting}>
                     Create
                   </Button>

@@ -219,3 +219,42 @@ export const updateJoinCode = mutation({
     return args.workspaceId;
   },
 });
+
+export const joinWorkspace = mutation({
+  args: {
+    joinCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const workspace = await ctx.db
+      .query("workspaces")
+      .filter((q) => q.eq(q.field("joinCode"), args.joinCode.toUpperCase()))
+      .unique();
+
+    if (!workspace) {
+      throw new ConvexError({ message: `Workspace with join code: ${args.joinCode} not found.` });
+    }
+
+    const existingMember = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", workspace._id).eq("userId", userId))
+      .unique();
+
+    if (existingMember) {
+      throw new ConvexError({ message: "Already a member of this workspace." });
+    }
+
+    await ctx.db.insert("members", {
+      userId,
+      workspaceId: workspace._id,
+      role: "member",
+    });
+
+    return workspace._id;
+  },
+});
