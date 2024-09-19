@@ -26,7 +26,7 @@ export const DeleteChannel: FC<DeleteChannelProps> = ({ channel }) => {
         description: `Channel '${name}' has been successfully removed.`,
       });
       onClose();
-      router.replace("/");
+      router.replace(`/workspace/${channel.workspaceId}`);
     },
     onError: (errorMessage) => {
       toast.error("Channel action", {

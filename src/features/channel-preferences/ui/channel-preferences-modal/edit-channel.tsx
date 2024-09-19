@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -15,11 +15,20 @@ import { useMutateChannel } from "../../model/services/mutate-channel/mutate-cha
 
 interface EditChannelProps {
   channel: NonNullable<Channel>;
+  isAdmin: boolean;
 }
 
-export const EditChannel: FC<EditChannelProps> = ({ channel }) => {
+export const EditChannel: FC<EditChannelProps> = ({ channel, isAdmin }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const form = useForm<UpdateChannelSchemaType>({ mode: "onTouched", resolver: zodResolver(UpdateChannelSchema) });
+
+  const handleOpenChange = useCallback((isOpen: boolean) => {
+    if (!isAdmin) {
+      return;
+    }
+
+    setIsEditModalOpen(isOpen);
+  }, [setIsEditModalOpen, isAdmin]);
 
   const onSubmit = useMutateChannel(channel._id, {
     onError(errorMessage) {
@@ -39,12 +48,14 @@ export const EditChannel: FC<EditChannelProps> = ({ channel }) => {
   });
 
   return (
-    <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+    <Dialog open={isEditModalOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">Channel name</p>
-            <p className="text-sm text-[#126483] hover:underline">Edit</p>
+            {isAdmin && (
+              <p className="text-sm text-[#126483] hover:underline">Edit</p>
+            )}
           </div>
           <p className="text-sm">
             #

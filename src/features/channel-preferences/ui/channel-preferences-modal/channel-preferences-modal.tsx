@@ -5,15 +5,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/di
 import { ChannelPreferencesModalData } from "@/shared/types";
 import { useGenericModal } from "@/shared/lib/hooks";
 import { useChannelIdParams } from "@/shared/lib/hooks/use-channel-id";
+import { useCurrentMemberIsAdmin } from "@/entities/member";
+import { Id } from "@convex/_generated/dataModel";
 
 import { EditChannel } from "./edit-channel";
 import { DeleteChannel } from "./delete-channel";
 
-export const ChannelPreferencesModal: FC = () => {
+interface ChannelPreferencesModalProps {
+  workspaceId: Id<"workspaces">;
+}
+
+export const ChannelPreferencesModal: FC<ChannelPreferencesModalProps> = ({ workspaceId }) => {
   const { isOpen, onClose, type } = useGenericModal<ChannelPreferencesModalData>();
 
   const channelId = useChannelIdParams();
   const [channel, isChannelLoading] = useGetCurrentChannel({ channelId });
+  const isAdmin = useCurrentMemberIsAdmin({ workspaceId });
 
   const isModalOpen = type === "channelPreferencesModal" && isOpen;
 
@@ -32,8 +39,10 @@ export const ChannelPreferencesModal: FC = () => {
           </DialogTitle>
         </DialogHeader>
         <div className="px-4 pb-4 flex flex-col gap-y-2">
-          <EditChannel channel={channel} />
-          <DeleteChannel channel={channel} />
+          <EditChannel channel={channel} isAdmin={isAdmin} />
+          {isAdmin && (
+            <DeleteChannel channel={channel} />
+          )}
         </div>
       </DialogContent>
     </Dialog>

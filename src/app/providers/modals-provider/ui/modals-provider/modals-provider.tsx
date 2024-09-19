@@ -27,7 +27,7 @@ export const ModalsProvider: FC = () => {
         </>
       )}
       {channelId && (
-        <ChannelPreferencesModal />
+        <ChannelPreferencesModal workspaceId={workspaceId} />
       )}
     </Mounted>
   );
