@@ -19,6 +19,7 @@ export const JoinForm: FC = () => {
 
   const form = useForm<JoinFormSchema>({
     resolver: zodResolver(JoinSchema),
+    mode: "onTouched",
     defaultValues: {
       pin: "",
     },

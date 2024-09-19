@@ -16,7 +16,7 @@ import { BaseSignCardProps } from "../../model/types/sign.types";
 import { useSignService } from "../../model/services/sign/sign.service";
 
 export const SignInCard: FC<BaseSignCardProps> = memo(({ switchCardsAction, flow }) => {
-  const form = useForm<SignInSchemaType>({ mode: "all", resolver: zodResolver(SignInSchema) });
+  const form = useForm<SignInSchemaType>({ mode: "onTouched", resolver: zodResolver(SignInSchema) });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const onSubmit = useSignService(flow, form);
 

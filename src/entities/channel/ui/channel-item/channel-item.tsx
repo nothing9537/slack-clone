@@ -33,7 +33,12 @@ export interface ChannelItemProps {
 
 export const ChannelItem: FC<ChannelItemProps> = ({ label, Icon, id, variant, workspaceId }) => {
   return (
-    <Button asChild variant="transparent" size="sm" className={cn(variants({ variant }))}>
+    <Button
+      asChild
+      variant="transparent"
+      size="sm"
+      className={cn(variants({ variant }))}
+    >
       <Link href={`/workspace/${workspaceId}/channel/${id}`}>
         <Icon className="size-4 mr-1 shrink-0" />
         <span className="text-sm truncate">{label}</span>

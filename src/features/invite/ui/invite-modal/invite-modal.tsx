@@ -47,10 +47,10 @@ export const InviteModal: FC = () => {
   }, [updateWorkspaceJoinCode, confirm]);
 
   const handleCopy = useCallback(() => {
-    const inviteLink = `${window.location.origin}/join/${workspace?._id}`;
+    const inviteCode = `${workspace?.joinCode}`;
 
-    navigator.clipboard.writeText(inviteLink).then(() => {
-      toast.success("Invite link copied to clipboard.");
+    navigator.clipboard.writeText(inviteCode).then(() => {
+      toast.success("Invite code copied to clipboard.");
     });
   }, [workspace]);
 
@@ -70,13 +70,13 @@ export const InviteModal: FC = () => {
               {workspace.name}
             </DialogTitle>
             <DialogDescription>
-              Use invite code below to invite people to this workspace
+              Use invite code below to invite people to this workspace.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-y-4 items-center justify-center py-10">
             <p className="text-4xl font-bold tracking-widest uppercase">{workspace.joinCode}</p>
             <Button variant="ghost" size="sm" onClick={handleCopy}>
-              Copy invite link
+              Copy invite code
               <Copy className="size-4 ml-2" />
             </Button>
           </div>

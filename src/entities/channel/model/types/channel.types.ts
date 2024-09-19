@@ -5,7 +5,7 @@ export type Channel = {
   _creationTime: number;
   workspaceId: Id<"workspaces">;
   name: string;
-} | undefined;
+} | null | undefined;
 
 export type Channels = ({
   _id: Id<"channels">;

@@ -73,3 +73,118 @@ export const createChannel = mutation({
     return channelId;
   },
 });
+
+export const getChannelById = query({
+  args: {
+    channelId: v.id("channels"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const channel = await ctx.db.get(args.channelId);
+
+    if (!channel) {
+      return null;
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", channel.workspaceId).eq("userId", userId))
+      .unique();
+
+    if (!member) {
+      return null;
+    }
+
+    return channel;
+  },
+});
+
+export const updateChannel = mutation({
+  args: {
+    channelId: v.id("channels"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const channel = await ctx.db.get(args.channelId);
+
+    if (!channel) {
+      throw new ConvexError({ message: "Channel not found." });
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", channel.workspaceId).eq("userId", userId))
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const existingChannel = await ctx.db
+      .query("channels")
+      .filter((q) => q.eq(q.field("workspaceId"), channel.workspaceId))
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .first();
+
+    if (existingChannel) {
+      throw new ConvexError({ message: `Channel with name: '${args.name}' already exists.` });
+    }
+
+    if (channel.name === "general" || args.name === "general") {
+      throw new ConvexError({ message: `'general' channel cannot be renamed.` });
+    }
+
+    await ctx.db.patch(args.channelId, { name: args.name });
+
+    return channel._id;
+  },
+});
+
+export const deleteChannel = mutation({
+  args: {
+    channelId: v.id("channels"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const channel = await ctx.db.get(args.channelId);
+
+    if (!channel) {
+      throw new ConvexError({ message: "Channel not found." });
+    }
+
+    const member = await ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", channel.workspaceId).eq("userId", userId))
+      .unique();
+
+    if (!member || member.role !== "admin") {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    if (channel.name === "general") {
+      throw new ConvexError({ message: "'general' channel cannot be deleted." });
+    }
+
+    await ctx.db.delete(args.channelId);
+
+    // TODO: delete associated messages
+
+    return channel;
+  },
+});

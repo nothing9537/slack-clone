@@ -17,7 +17,7 @@ import { CreateWorkspaceSchemaType } from "../../model/types/create-workspace-sc
 import { useCreateWorkspace } from "../../model/services/create-workspace/create-workspace.service";
 
 export const CreateWorkspaceForm: FC = () => {
-  const form = useForm<CreateWorkspaceSchemaType>({ mode: "all", resolver: zodResolver(CreateWorkspaceSchema) });
+  const form = useForm<CreateWorkspaceSchemaType>({ mode: "onTouched", resolver: zodResolver(CreateWorkspaceSchema) });
   const { onClose } = useModal();
   const router = useRouter();
 

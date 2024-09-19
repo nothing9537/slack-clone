@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { AlertTriangle, Loader, MessageSquareIcon, SendHorizonal } from "lucide-react";
 
+import { ChannelItem, ChannelsList, useGetChannels } from "@/entities/channel";
 import { MembersList, useCurrentMember, useCurrentMemberIsAdmin, useGetMembers } from "@/entities/member";
 import { useGetWorkspaceById } from "@/entities/workspace";
 import { useModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
 
-import { ChannelItem, ChannelsList, useGetChannels } from "@/entities/channel";
 import { LoadingFallback } from "../workspace-sidebar-header/loading-fallback";
 import { WorkspaceHeader } from "../workspace-sidebar-header/workspace-sidebar-header";
 import { WorkspaceSection } from "../workspace-section/workspace-section";
@@ -50,7 +50,7 @@ export const WorkspaceSidebar: FC = () => {
         <ChannelItem
           label="Drafts & Sent"
           Icon={SendHorizonal}
-          id="threads"
+          id="drafts"
           workspaceId={workspaceId}
         />
       </div>

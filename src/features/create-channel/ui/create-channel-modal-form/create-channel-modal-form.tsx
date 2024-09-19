@@ -48,9 +48,7 @@ export const CreateChannelModalForm: FC<CreateChannelModalFormProps> = ({ worksp
               type: "input",
               name: "name",
               placeholder: "Enter channel name, e.g. plan-budget",
-              valueAs(value) {
-                return value.replace(/\s+/g, "-").toLowerCase();
-              },
+              valueAs: (value) => value.replace(/\s+/g, "-").toLowerCase(),
             },
           ]}
         />

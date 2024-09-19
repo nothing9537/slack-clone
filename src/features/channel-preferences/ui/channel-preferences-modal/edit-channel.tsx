@@ -3,27 +3,27 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { Workspace } from "@/entities/workspace";
+import { Channel } from "@/entities/channel";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
 import { Form } from "@/shared/ui/form";
 import { FormFactory } from "@/shared/lib/components";
 import { Button } from "@/shared/ui/button";
 
-import { UpdateWorkspaceSchemaType } from "../../model/types/mutate-workspace-schema.types";
-import { UpdateWorkspaceSchema } from "../../lib/consts/update-workspace-schema.consts";
-import { useMutateWorkspace } from "../../model/services/mutate-workspace/mutate-workspace.service";
+import { UpdateChannelSchemaType } from "../../model/types/mutate-channel-schema.types";
+import { UpdateChannelSchema } from "../../lib/consts/update-channel-schema.consts";
+import { useMutateChannel } from "../../model/services/mutate-channel/mutate-channel.service";
 
-interface EditWorkspaceProps {
-  workspace: NonNullable<Workspace>;
+interface EditChannelProps {
+  channel: NonNullable<Channel>;
 }
 
-export const EditWorkspace: FC<EditWorkspaceProps> = ({ workspace }) => {
+export const EditChannel: FC<EditChannelProps> = ({ channel }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const form = useForm<UpdateWorkspaceSchemaType>({ mode: "onTouched", resolver: zodResolver(UpdateWorkspaceSchema) });
+  const form = useForm<UpdateChannelSchemaType>({ mode: "onTouched", resolver: zodResolver(UpdateChannelSchema) });
 
-  const onSubmit = useMutateWorkspace(workspace._id, {
+  const onSubmit = useMutateChannel(channel._id, {
     onError(errorMessage) {
-      toast.error("Workspace action", {
+      toast.error("Channel action", {
         description: errorMessage,
       });
     },
@@ -32,8 +32,8 @@ export const EditWorkspace: FC<EditWorkspaceProps> = ({ workspace }) => {
 
       setIsEditModalOpen(false);
 
-      toast.success("Workspace action", {
-        description: `Workspace name has been successfully changed to ${name}!`,
+      toast.success("Channel action", {
+        description: `Channel name has been successfully changed to '${name}'!`,
       });
     },
   });
@@ -43,16 +43,20 @@ export const EditWorkspace: FC<EditWorkspaceProps> = ({ workspace }) => {
       <DialogTrigger asChild>
         <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold">Workspace name</p>
-            <p className="text-sm text-[#1264a3] hover:underline font-semibold">Edit</p>
+            <p className="text-sm font-semibold">Channel name</p>
+            <p className="text-sm text-[#126483] hover:underline">Edit</p>
           </div>
-          <p>{workspace.name}</p>
+          <p className="text-sm">
+            #
+            {" "}
+            {channel.name}
+          </p>
         </div>
       </DialogTrigger>
       <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>
-            Rename this workspace
+            Rename this channel
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -60,7 +64,12 @@ export const EditWorkspace: FC<EditWorkspaceProps> = ({ workspace }) => {
             <FormFactory
               form={form}
               components={[
-                { type: "input", name: "name", placeholder: "Enter new workspace name" },
+                {
+                  type: "input",
+                  name: "name",
+                  placeholder: "Enter new channel name",
+                  valueAs: (value) => value.replace(/\s+/g, "-").toLowerCase(),
+                },
               ]}
             />
             <DialogFooter>
