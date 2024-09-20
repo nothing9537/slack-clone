@@ -1,16 +1,21 @@
+"use client";
+
 /* eslint-disable consistent-return */
-import { ButtonHTMLAttributes, FC, memo, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Quill, { type QuillOptions } from "quill";
+import { ButtonHTMLAttributes, FC, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Delta, Op } from "quill/core";
 import { PiTextAa } from "react-icons/pi";
 import { MdSend } from "react-icons/md";
 import { ImageIcon, Smile } from "lucide-react";
+import { EmojiClickData } from "emoji-picker-react";
 
 import { Button } from "@/shared/ui/button";
+import { Hint } from "@/shared/ui/hint";
+
+import { cn } from "../lib/utils/cn";
+import { EmojiPopover } from "./emoji-popover";
 
 import "quill/dist/quill.snow.css";
-import { Hint } from "@/shared/ui/hint";
-import { cn } from "../lib/utils/cn";
 
 type EditorType = "create" | "update";
 type EditorValue = {
@@ -32,7 +37,7 @@ interface EditorProps {
   actionButtonType?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
 }
 
-export const Editor: FC<EditorProps> = memo((props) => {
+export const Editor: FC<EditorProps> = (props) => {
   const [text, setText] = useState("");
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 
@@ -93,6 +98,7 @@ export const Editor: FC<EditorProps> = memo((props) => {
     };
 
     const quill = new Quill(editorContainer, options);
+
     quillRef.current = quill;
     quillRef.current.focus();
 
@@ -133,6 +139,14 @@ export const Editor: FC<EditorProps> = memo((props) => {
     }
   }, []);
 
+  const onEmojiSelect = (emojiData: EmojiClickData) => {
+    const quill = quillRef.current;
+
+    const index = text.length < 0 ? 0 : text.length - 1;
+
+    quill?.insertText(index, emojiData.emoji);
+  };
+
   const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
   const actionDisabled = isEmpty || disabled;
 
@@ -148,9 +162,11 @@ export const Editor: FC<EditorProps> = memo((props) => {
           </Hint>
           {variant === "create" && (
             <Hint label="Emoji">
-              <Button disabled={disabled} size="iconSm" variant="ghost" type="button">
-                <Smile className="size-4" />
-              </Button>
+              <EmojiPopover onEmojiSelect={onEmojiSelect}>
+                <Button disabled={disabled} size="iconSm" variant="ghost" type="button">
+                  <Smile className="size-4" />
+                </Button>
+              </EmojiPopover>
             </Hint>
           )}
           <Hint label="Image">
@@ -175,13 +191,17 @@ export const Editor: FC<EditorProps> = memo((props) => {
           )}
         </div>
       </div>
-      <div className="p-2 text-xs text-muted-foreground flex justify-end">
-        <p>
-          <strong>Shift + Enter</strong>
-          {" "}
-          to add a new line
-        </p>
-      </div>
+      {variant === "create" && (
+        <div className={cn("p-2 text-xs text-muted-foreground flex justify-end opacity-0 transition", !isEmpty && "opacity-100")}>
+          <p>
+            <strong>Shift + Enter</strong>
+            {" "}
+            to add a new line
+          </p>
+        </div>
+      )}
     </div>
   );
-});
+};
+
+export default Editor;

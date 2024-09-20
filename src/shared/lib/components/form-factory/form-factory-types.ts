@@ -8,10 +8,10 @@ import { FormFactorySeparatorComponent } from "./types/separator";
 import { FormFactoryInputOTPComponent } from "./types/input-otp-component";
 
 export type FormFactoryComponent<T extends FieldValues> = FormFactoryInputComponent<T>
-  | FormFactoryCustomComponent<T>
-  | FormFactorySeparatorComponent<T>
-  | FormFactoryCustomLayoutComponent<T>
-  | FormFactoryInputOTPComponent<T>;
+| FormFactoryCustomComponent<T>
+| FormFactorySeparatorComponent<T>
+| FormFactoryCustomLayoutComponent<T>
+| FormFactoryInputOTPComponent<T>;
 
 export interface FormFactoryProps<T extends FieldValues> {
   form: UseFormReturn<T>;
