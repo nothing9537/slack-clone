@@ -185,9 +185,17 @@ export const Editor: FC<EditorProps> = (props) => {
         ref={imageElementRef}
         onChange={(e) => {
           if (e.target.files) {
-            const selectedFiles = Array.from(e.target.files);
+            const selectedFiles = Array.from(e.target.files).filter((_, index) => index < 5);
 
-            setImages((prevImages) => [...prevImages, ...selectedFiles]);
+            setImages((prevImages) => {
+              const newFiles = [...prevImages, ...selectedFiles];
+
+              if (newFiles.length > 5) {
+                return prevImages;
+              }
+
+              return newFiles;
+            });
           }
         }}
         className="hidden"
