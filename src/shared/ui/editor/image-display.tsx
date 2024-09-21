@@ -21,6 +21,10 @@ export const ImageDisplay: FC<ImageDisplayProps> = ({
   useEffect(() => {
     const urls = images.map((file) => URL.createObjectURL(file));
     setObjectURLs(urls);
+
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
   }, [images]);
 
   const handleRemove = (indexToRemove: number) => {
@@ -59,12 +63,14 @@ export const ImageDisplay: FC<ImageDisplayProps> = ({
                 <X className="size-3.5" />
               </button>
             </Hint>
-            <Image
-              src={objectURLs[index]}
-              alt={`Uploaded ${file.name}-${index + 1}`}
-              fill
-              className="rounded-xl overflow-hidden border object-cover"
-            />
+            {objectURLs[index] && (
+              <Image
+                src={objectURLs[index]}
+                alt={`Uploaded ${file.name}-${index + 1}`}
+                fill
+                className="rounded-xl overflow-hidden border object-cover"
+              />
+            )}
           </div>
         ))}
       </div>

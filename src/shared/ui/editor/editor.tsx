@@ -1,46 +1,51 @@
-// Editor.tsx
-
 "use client";
 
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable consistent-return */
 import Quill, { type QuillOptions } from "quill";
-import {
-  ButtonHTMLAttributes,
-  FC,
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { ButtonHTMLAttributes, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Delta, Op } from "quill/core";
 import { MdSend } from "react-icons/md";
 import { EmojiClickData } from "emoji-picker-react";
+import { useFormContext } from "react-hook-form";
 
 import { cn } from "../../lib/utils/cn";
 import { Button } from "../button";
-import { HideToolbar } from "./hide-toolbar";
+import { handleQuillPaste } from "./utils/handle-quill-paste";
+import { HideToolbar } from "./hide-toolbar-selector";
 import { ImageSelector } from "./image-selector";
 import { UpdateVariant } from "./update-variant";
-import { formats } from "./formats";
-import { Emoji } from "./emoji";
-import { handleQuillPaste } from "./utils/handle-quill-paste";
+import { formats } from "./consts/formats";
+import { Emoji } from "./emoji-selector";
 
 import "quill/dist/quill.snow.css";
 import { ImageDisplay } from "./image-display";
 
 type EditorType = "create" | "update";
+
+/**
+ * `body` - JSON string of `Delta` from `quill` package.
+ *
+ * `images` - An optional array of `File` base type.
+ *
+ * To use body, do:
+ *
+ * @example
+ * import { Delta } from "quill";
+ *
+ * const deltaContent = JSON.parse(body) as Delta;
+ *
+ * console.log(deltaContent);
+ */
 type EditorValue = {
-  image: File | null;
-  body: string;
+  images?: File[]; // * available only in "create" variant
+  body: string; // * JSON of `Delta` from quill
 };
 
 const actionClassName = "bg-[#007a5a] hover:bg-[#007a5a]/80 text-white";
 const actionClassNameDisabled = "bg-white hover:bg-white text-muted-foreground";
 
 interface EditorProps {
-  onChange: (editorValue: EditorValue) => Promise<void>;
   onCancel?: () => void;
   placeholder?: string;
   defaultValue?: Delta | Op[];
@@ -50,12 +55,13 @@ interface EditorProps {
   actionButtonType?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
 }
 
-export const Editor: FC<EditorProps> = (props) => {
+export const Editor = (props: EditorProps) => {
   const [text, setText] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
+  const formContext = useFormContext<EditorValue>();
 
-  const { onChange, onCancel, innerRef } = props;
+  const { onCancel, innerRef } = props;
   const {
     placeholder = "Write your message...",
     defaultValue = [],
@@ -65,21 +71,39 @@ export const Editor: FC<EditorProps> = (props) => {
   } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const changeRef = useRef(onChange);
   const cancelRef = useRef(onCancel);
   const placeholderRef = useRef(placeholder);
   const quillRef = useRef<Quill | null>(null);
   const defaultValueRef = useRef(defaultValue);
   const disabledRef = useRef(disabled);
   const imageElementRef = useRef<HTMLInputElement | null>(null);
+  const virtualSubmitButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const imagesRef = useRef<File[]>(images);
+
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
 
   useLayoutEffect(() => {
-    changeRef.current = onChange;
     cancelRef.current = onCancel;
     placeholderRef.current = placeholder;
     defaultValueRef.current = defaultValue;
     disabledRef.current = disabled;
   });
+
+  const onSaveSubmitAction = useCallback(
+    (passImages: boolean) => {
+      formContext.setValue("body", JSON.stringify(quillRef.current?.getContents()));
+
+      if (passImages) {
+        formContext.setValue("images", imagesRef.current);
+      }
+
+      setImages([]);
+    },
+    [formContext],
+  );
 
   useEffect(() => {
     if (!containerRef?.current) {
@@ -87,9 +111,7 @@ export const Editor: FC<EditorProps> = (props) => {
     }
 
     const container = containerRef.current;
-    const editorContainer = container.appendChild(
-      container.ownerDocument.createElement("div"),
-    );
+    const editorContainer = container.appendChild(container.ownerDocument.createElement("div"));
 
     const options: QuillOptions = {
       theme: "snow",
@@ -105,12 +127,35 @@ export const Editor: FC<EditorProps> = (props) => {
           bindings: {
             enter: {
               key: "Enter",
-              handler: () => { },
+              handler: () => {
+                const quill = quillRef.current;
+                if (!quill) return;
+
+                const text = quill.getText();
+                const imagesFromInput = Array.from(imageElementRef.current?.files || []);
+
+                const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0 && imagesFromInput.length <= 0;
+
+                if (isEmpty) {
+                  return;
+                }
+
+                if (variant === "create") {
+                  onSaveSubmitAction(true);
+                } else {
+                  onSaveSubmitAction(false);
+                }
+
+                virtualSubmitButtonRef.current?.click();
+              },
             },
             shift_enter: {
               key: "Enter",
               shiftKey: true,
               handler: () => {
+                const quill = quillRef.current;
+                if (!quill) return;
+
                 quill.insertText(quill.getSelection()?.index || 0, "\n");
               },
             },
@@ -136,7 +181,6 @@ export const Editor: FC<EditorProps> = (props) => {
     };
 
     quill.on(Quill.events.TEXT_CHANGE, textChangeHandler);
-
     quill.root.addEventListener("paste", handleQuillPaste(setImages));
 
     return () => {
@@ -155,7 +199,7 @@ export const Editor: FC<EditorProps> = (props) => {
         innerRef.current = null;
       }
     };
-  }, [innerRef]);
+  }, [innerRef, variant, onSaveSubmitAction]);
 
   const toggleToolbar = useCallback(() => {
     setIsToolbarVisible((prev) => !prev);
@@ -169,12 +213,12 @@ export const Editor: FC<EditorProps> = (props) => {
   const onEmojiSelect = (emojiData: EmojiClickData) => {
     const quill = quillRef.current;
 
-    const index = text.length < 0 ? 0 : text.length - 1;
+    const index = quill ? quill.getText().length : 0;
 
     quill?.insertText(index, emojiData.emoji);
   };
 
-  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0;
+  const isEmpty = text.replace(/<(.|\n)*?>/g, "").trim().length === 0 && images.length <= 0;
   const actionDisabled = isEmpty || disabled;
 
   return (
@@ -183,9 +227,13 @@ export const Editor: FC<EditorProps> = (props) => {
         type="file"
         accept="image/*"
         ref={imageElementRef}
+        className="hidden"
+        multiple
         onChange={(e) => {
           if (e.target.files) {
-            const selectedFiles = Array.from(e.target.files).filter((_, index) => index < 5);
+            const selectedFiles = Array.from(e.target.files).filter(
+              (_image, index) => index < 5,
+            );
 
             setImages((prevImages) => {
               const newFiles = [...prevImages, ...selectedFiles];
@@ -198,10 +246,9 @@ export const Editor: FC<EditorProps> = (props) => {
             });
           }
         }}
-        className="hidden"
-        multiple
       />
-      <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white">
+      <button type="submit" className="hidden" ref={virtualSubmitButtonRef} />
+      <div className={cn("flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white", disabled && "opacity-50")}>
         <div ref={containerRef} className="h-full ql-custom" />
         {images.length > 0 && (
           <ImageDisplay
@@ -217,7 +264,10 @@ export const Editor: FC<EditorProps> = (props) => {
             disabled={disabled}
           />
           {variant === "create" && (
-            <Emoji disabled={disabled} onEmojiSelect={onEmojiSelect} />
+            <Emoji
+              disabled={disabled}
+              onEmojiSelect={onEmojiSelect}
+            />
           )}
           <ImageSelector
             disabled={disabled}
@@ -228,6 +278,7 @@ export const Editor: FC<EditorProps> = (props) => {
               disabled={actionDisabled}
               actionClassName={actionClassName}
               actionButtonType={actionButtonType}
+              saveAction={onSaveSubmitAction}
             />
           )}
           {variant === "create" && (
@@ -240,6 +291,7 @@ export const Editor: FC<EditorProps> = (props) => {
                 isEmpty && actionClassNameDisabled,
               )}
               type={actionButtonType}
+              onClick={() => onSaveSubmitAction(true)}
             >
               <MdSend className="size-4" />
             </Button>
@@ -254,7 +306,7 @@ export const Editor: FC<EditorProps> = (props) => {
           )}
         >
           <p>
-            <strong>Shift + Enter</strong>
+            <strong>Shift + Enter / Enter</strong>
             {" "}
             to add a new line
           </p>
