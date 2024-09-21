@@ -1,21 +1,34 @@
+// Editor.tsx
+
 "use client";
 
 /* eslint-disable consistent-return */
 import Quill, { type QuillOptions } from "quill";
-import { ButtonHTMLAttributes, FC, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  ButtonHTMLAttributes,
+  FC,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { Delta, Op } from "quill/core";
-import { PiTextAa } from "react-icons/pi";
 import { MdSend } from "react-icons/md";
-import { ImageIcon, Smile } from "lucide-react";
 import { EmojiClickData } from "emoji-picker-react";
 
-import { Button } from "@/shared/ui/button";
-import { Hint } from "@/shared/ui/hint";
-
-import { cn } from "../lib/utils/cn";
-import { EmojiPopover } from "./emoji-popover";
+import { cn } from "../../lib/utils/cn";
+import { Button } from "../button";
+import { HideToolbar } from "./hide-toolbar";
+import { ImageSelector } from "./image-selector";
+import { UpdateVariant } from "./update-variant";
+import { formats } from "./formats";
+import { Emoji } from "./emoji";
+import { handleQuillPaste } from "./utils/handle-quill-paste";
 
 import "quill/dist/quill.snow.css";
+import { ImageDisplay } from "./image-display";
 
 type EditorType = "create" | "update";
 type EditorValue = {
@@ -39,10 +52,17 @@ interface EditorProps {
 
 export const Editor: FC<EditorProps> = (props) => {
   const [text, setText] = useState("");
+  const [images, setImages] = useState<File[]>([]);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
 
   const { onChange, onCancel, innerRef } = props;
-  const { placeholder = "Write your message...", defaultValue = [], actionButtonType = "button", variant = "create", disabled = false } = props;
+  const {
+    placeholder = "Write your message...",
+    defaultValue = [],
+    actionButtonType = "button",
+    variant = "create",
+    disabled = false,
+  } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const changeRef = useRef(onChange);
@@ -51,6 +71,7 @@ export const Editor: FC<EditorProps> = (props) => {
   const quillRef = useRef<Quill | null>(null);
   const defaultValueRef = useRef(defaultValue);
   const disabledRef = useRef(disabled);
+  const imageElementRef = useRef<HTMLInputElement | null>(null);
 
   useLayoutEffect(() => {
     changeRef.current = onChange;
@@ -73,6 +94,7 @@ export const Editor: FC<EditorProps> = (props) => {
     const options: QuillOptions = {
       theme: "snow",
       placeholder: placeholderRef.current,
+      formats,
       modules: {
         toolbar: [
           ["bold", "italic", "strike"],
@@ -109,12 +131,17 @@ export const Editor: FC<EditorProps> = (props) => {
     quill.setContents(defaultValueRef.current);
     setText(quill.getText());
 
-    quill.on(Quill.events.TEXT_CHANGE, () => {
+    const textChangeHandler = () => {
       setText(quill.getText());
-    });
+    };
+
+    quill.on(Quill.events.TEXT_CHANGE, textChangeHandler);
+
+    quill.root.addEventListener("paste", handleQuillPaste(setImages));
 
     return () => {
-      quill.off(Quill.events.TEXT_CHANGE);
+      quill.off(Quill.events.TEXT_CHANGE, textChangeHandler);
+      quill.root.removeEventListener("paste", handleQuillPaste(setImages));
 
       if (container) {
         container.innerHTML = "";
@@ -152,47 +179,72 @@ export const Editor: FC<EditorProps> = (props) => {
 
   return (
     <div className="flex flex-col">
+      <input
+        type="file"
+        accept="image/*"
+        ref={imageElementRef}
+        onChange={(e) => {
+          if (e.target.files) {
+            const selectedFiles = Array.from(e.target.files);
+
+            setImages((prevImages) => [...prevImages, ...selectedFiles]);
+          }
+        }}
+        className="hidden"
+        multiple
+      />
       <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white">
         <div ref={containerRef} className="h-full ql-custom" />
+        {images.length > 0 && (
+          <ImageDisplay
+            images={images}
+            setImages={setImages}
+            imageElementRef={imageElementRef}
+          />
+        )}
         <div className="flex px-2 pb-2 z-[5]">
-          <Hint label={isToolbarVisible ? "Show formatting" : "Hide formatting"}>
-            <Button disabled={disabled} size="iconSm" variant="ghost" type="button" onClick={toggleToolbar}>
-              <PiTextAa className="size-4" />
-            </Button>
-          </Hint>
+          <HideToolbar
+            toggleToolbar={toggleToolbar}
+            isToolbarVisible={isToolbarVisible}
+            disabled={disabled}
+          />
           {variant === "create" && (
-            <Hint label="Emoji">
-              <EmojiPopover onEmojiSelect={onEmojiSelect}>
-                <Button disabled={disabled} size="iconSm" variant="ghost" type="button">
-                  <Smile className="size-4" />
-                </Button>
-              </EmojiPopover>
-            </Hint>
+            <Emoji disabled={disabled} onEmojiSelect={onEmojiSelect} />
           )}
-          <Hint label="Image">
-            <Button disabled={disabled} size="iconSm" variant="ghost" type="button">
-              <ImageIcon className="size-4" />
-            </Button>
-          </Hint>
+          <ImageSelector
+            disabled={disabled}
+            imageElementRef={imageElementRef}
+          />
           {variant === "update" && (
-            <div className="ml-auto flex items-center gap-x-2">
-              <Button disabled={disabled} size="sm" variant="outline">
-                Cancel
-              </Button>
-              <Button disabled={actionDisabled} size="sm" variant="outline" className={actionClassName} type={actionButtonType}>
-                Save
-              </Button>
-            </div>
+            <UpdateVariant
+              disabled={actionDisabled}
+              actionClassName={actionClassName}
+              actionButtonType={actionButtonType}
+            />
           )}
           {variant === "create" && (
-            <Button disabled={actionDisabled} size="iconSm" className={cn(actionClassName, "ml-auto", isEmpty && actionClassNameDisabled)} type={actionButtonType}>
+            <Button
+              disabled={actionDisabled}
+              size="iconSm"
+              className={cn(
+                actionClassName,
+                "ml-auto",
+                isEmpty && actionClassNameDisabled,
+              )}
+              type={actionButtonType}
+            >
               <MdSend className="size-4" />
             </Button>
           )}
         </div>
       </div>
       {variant === "create" && (
-        <div className={cn("p-2 text-xs text-muted-foreground flex justify-end opacity-0 transition", !isEmpty && "opacity-100")}>
+        <div
+          className={cn(
+            "p-2 text-xs text-muted-foreground flex justify-end opacity-0 transition",
+            !isEmpty && "opacity-100",
+          )}
+        >
           <p>
             <strong>Shift + Enter</strong>
             {" "}
