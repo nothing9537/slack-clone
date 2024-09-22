@@ -4,6 +4,7 @@ import { FC } from "react";
 import { Loader, TriangleAlert } from "lucide-react";
 
 import { useGetCurrentChannel } from "@/entities/channel";
+import { useGetMessages } from "@/entities/message";
 import { ChannelScreen } from "@/widgets/channel";
 import { Id } from "@convex/_generated/dataModel";
 
@@ -16,6 +17,9 @@ interface ChannelIDPageProps {
 export const ChannelIDPage: FC<ChannelIDPageProps> = ({ params }) => {
   const { channelId } = params;
   const [currentChannel, isCurrentChannelLoading] = useGetCurrentChannel({ channelId });
+  const [channelMessages] = useGetMessages({ channelId });
+
+  console.log(channelMessages);
 
   if (isCurrentChannelLoading) {
     return (

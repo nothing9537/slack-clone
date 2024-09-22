@@ -1,21 +1,10 @@
 import { ConvexError, v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 
-import { mutation, QueryCtx } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
-
-const getMemberOrThrow = async (ctx: QueryCtx, workspaceId: Id<"workspaces">, userId: Id<"users">) => {
-  const member = await ctx.db
-    .query("members")
-    .withIndex("by_workspace_id_user_id", (q) => q.eq("workspaceId", workspaceId).eq("userId", userId))
-    .unique();
-
-  if (!member) {
-    throw new ConvexError({ message: "Unauthorized." });
-  }
-
-  return member;
-};
+import { mutation, query } from "./_generated/server";
+import { getMemberOrThrow } from "./utils/get-member-or-throw.utils";
+import { normalizeMessages } from "./utils/normalize-messages.utils";
 
 export const createMessage = mutation({
   args: {
@@ -55,9 +44,52 @@ export const createMessage = mutation({
       parentMessageId: args.parentMessageId,
       channelId: args.channelId,
       conversationId,
-      updatedAt: Date.now(),
     });
 
     return messageId;
+  },
+});
+
+export const getMessages = query({
+  args: {
+    channelId: v.optional(v.id("channels")),
+    conversationId: v.optional(v.id("conversations")),
+    parentMessageId: v.optional(v.id("messages")),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    let { conversationId } = args;
+
+    if (!args?.conversationId && !args?.channelId && args?.parentMessageId) {
+      const parentMessage = await ctx.db.get(args.parentMessageId);
+
+      if (!parentMessage) {
+        throw new ConvexError({ message: "Parent message not found" });
+      }
+
+      conversationId = parentMessage.conversationId;
+    }
+
+    const results = await ctx.db
+      .query("messages")
+      .withIndex("by_channel_id_parent_message_id_conversation_id", (q) => q
+        .eq("channelId", args.channelId)
+        .eq("parentMessageId", args.parentMessageId)
+        .eq("conversationId", conversationId))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    const page = await Promise.all(results.page.map(normalizeMessages(ctx)));
+
+    return {
+      ...results,
+      page: page.filter((m) => m !== null),
+    };
   },
 });

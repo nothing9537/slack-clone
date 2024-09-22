@@ -2,15 +2,10 @@ import { ConvexError, v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 import { mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { Doc } from "./_generated/dataModel";
+import { generateInvitationCode } from "./utils/generate-invitation-code.utils";
 
-const generateInvitationCode = () => {
-  const code = Array
-    .from({ length: 6 }, () => "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)])
-    .join("");
-
-  return code.toUpperCase();
-};
+type Workspace = Doc<"workspaces"> | null;
 
 export const getWorkspaces = query({
   args: {},
@@ -27,16 +22,20 @@ export const getWorkspaces = query({
       .collect();
 
     const workspaceIds = members.map((m) => m.workspaceId);
-    const workspaces: ({ _id: Id<"workspaces">; _creationTime: number; name: string; userId: Id<"users">; joinCode: string; } | null)[] = [];
+    const workspacePromises: Promise<Workspace>[] = [];
+    const workspaces: Workspace[] = [];
 
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const workspaceId of workspaceIds) {
-      const workspace = await ctx.db.get(workspaceId);
+    workspaceIds.forEach((workspaceId) => {
+      workspacePromises.push(ctx.db.get(workspaceId));
+    });
 
+    const workspacesRes = await Promise.all(workspacePromises);
+
+    workspacesRes.forEach((workspace) => {
       if (workspace) {
         workspaces.push(workspace);
       }
-    }
+    });
 
     return workspaces;
   },
