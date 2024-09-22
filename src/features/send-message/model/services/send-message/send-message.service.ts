@@ -16,11 +16,11 @@ interface UseSendMessageOptions {
 export const useSendMessage = (args: UseSendMessageOptions, options?: CreateMessageOptions) => {
   const mutation = useMutation(api.messages.createMessage);
 
-  const mutate = useCallback(async (values: CreateMessageRequestType) => {
+  const mutate = useCallback(async (values: CreateMessageRequestType, images?: Id<"_storage">[]) => {
     const { body } = values;
 
     try {
-      const response = await mutation({ body, ...args });
+      const response = await mutation({ body, images, ...args });
       options?.onSuccess?.(response);
 
       return response;

@@ -1,6 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { EditorValue } from "../editor";
 
-export const handleQuillPaste = (setImages: Dispatch<SetStateAction<File[]>>) => (e: ClipboardEvent) => {
+export const handleQuillPaste = (setImages: Dispatch<SetStateAction<File[]>>, form: UseFormReturn<EditorValue>) => (e: ClipboardEvent) => {
   if (!e.clipboardData) {
     return;
   }
@@ -29,8 +31,12 @@ export const handleQuillPaste = (setImages: Dispatch<SetStateAction<File[]>>) =>
       const newImages = [...prevImages, ...imageFiles];
 
       if (newImages.length > 5) {
+        form.setValue("images", prevImages);
+
         return prevImages;
       }
+
+      form.setValue("images", newImages);
 
       return newImages;
     });

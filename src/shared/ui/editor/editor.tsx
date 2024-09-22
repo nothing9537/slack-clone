@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable consistent-return */
 import Quill, { type QuillOptions } from "quill";
-import { ButtonHTMLAttributes, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ButtonHTMLAttributes, memo, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Delta, Op } from "quill/core";
 import { MdSend } from "react-icons/md";
 import { EmojiClickData } from "emoji-picker-react";
@@ -37,7 +37,7 @@ type EditorType = "create" | "update";
  *
  * console.log(deltaContent);
  */
-type EditorValue = {
+export type EditorValue = {
   images?: File[]; // * available only in "create" variant
   body: string; // * JSON of `Delta` from quill
 };
@@ -55,7 +55,7 @@ interface EditorProps {
   actionButtonType?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
 }
 
-export const Editor = (props: EditorProps) => {
+export const Editor = memo((props: EditorProps) => {
   const [text, setText] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
@@ -92,18 +92,15 @@ export const Editor = (props: EditorProps) => {
     disabledRef.current = disabled;
   });
 
-  const onSaveSubmitAction = useCallback(
-    (passImages: boolean) => {
-      formContext.setValue("body", JSON.stringify(quillRef.current?.getContents()));
+  const onSaveSubmitAction = useCallback((passImages: boolean) => {
+    formContext.setValue("body", JSON.stringify(quillRef.current?.getContents()));
 
-      if (passImages) {
-        formContext.setValue("images", imagesRef.current);
-      }
+    if (passImages) {
+      formContext.setValue("images", imagesRef.current);
+    }
 
-      setImages([]);
-    },
-    [formContext],
-  );
+    setImages([]);
+  }, [formContext]);
 
   useEffect(() => {
     if (!containerRef?.current) {
@@ -181,11 +178,11 @@ export const Editor = (props: EditorProps) => {
     };
 
     quill.on(Quill.events.TEXT_CHANGE, textChangeHandler);
-    quill.root.addEventListener("paste", handleQuillPaste(setImages));
+    quill.root.addEventListener("paste", handleQuillPaste(setImages, formContext));
 
     return () => {
       quill.off(Quill.events.TEXT_CHANGE, textChangeHandler);
-      quill.root.removeEventListener("paste", handleQuillPaste(setImages));
+      quill.root.removeEventListener("paste", handleQuillPaste(setImages, formContext));
 
       if (container) {
         container.innerHTML = "";
@@ -199,7 +196,7 @@ export const Editor = (props: EditorProps) => {
         innerRef.current = null;
       }
     };
-  }, [innerRef, variant, onSaveSubmitAction]);
+  }, [innerRef, variant, onSaveSubmitAction, formContext]);
 
   const toggleToolbar = useCallback(() => {
     setIsToolbarVisible((prev) => !prev);
@@ -239,8 +236,12 @@ export const Editor = (props: EditorProps) => {
               const newFiles = [...prevImages, ...selectedFiles];
 
               if (newFiles.length > 5) {
+                formContext.setValue("images", prevImages);
+
                 return prevImages;
               }
+
+              formContext.setValue("images", newFiles);
 
               return newFiles;
             });
@@ -255,6 +256,7 @@ export const Editor = (props: EditorProps) => {
             images={images}
             setImages={setImages}
             imageElementRef={imageElementRef}
+            form={formContext}
           />
         )}
         <div className="flex px-2 pb-2 z-[5]">
@@ -314,6 +316,6 @@ export const Editor = (props: EditorProps) => {
       )}
     </div>
   );
-};
+});
 
 export default Editor;

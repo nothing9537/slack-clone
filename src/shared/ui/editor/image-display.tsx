@@ -2,20 +2,19 @@
 import Image from "next/image";
 import { Dispatch, FC, MutableRefObject, SetStateAction, useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
 
 import { Hint } from "../hint";
+import { EditorValue } from "./editor";
 
 interface ImageDisplayProps {
   images: File[];
   setImages: Dispatch<SetStateAction<File[]>>;
   imageElementRef: MutableRefObject<HTMLInputElement | null>;
+  form: UseFormReturn<EditorValue>;
 }
 
-export const ImageDisplay: FC<ImageDisplayProps> = ({
-  setImages,
-  imageElementRef,
-  images,
-}) => {
+export const ImageDisplay: FC<ImageDisplayProps> = ({ setImages, imageElementRef, images, form }) => {
   const [objectURLs, setObjectURLs] = useState<string[]>([]);
 
   useEffect(() => {
@@ -30,6 +29,8 @@ export const ImageDisplay: FC<ImageDisplayProps> = ({
   const handleRemove = (indexToRemove: number) => {
     const updatedImages = images.filter((_, index) => index !== indexToRemove);
     setImages(updatedImages);
+
+    form.setValue("images", updatedImages);
 
     URL.revokeObjectURL(objectURLs[indexToRemove]);
 
