@@ -2,9 +2,10 @@ import { defineSchema } from "convex/server";
 
 import { authSchema } from "./models/auth.model";
 import { workspaceModel } from "./models/workspace.model";
-import { memberModel } from "./models/members.model";
+import { memberModel } from "./models/member.model";
 import { channelModel } from "./models/channel.model";
-import { messageModel } from "./models/messages.model";
+import { messageModel } from "./models/message.model";
+import { conversationModel } from "./models/conversation.model";
 
 const schema = defineSchema({
   ...authSchema,
@@ -12,6 +13,7 @@ const schema = defineSchema({
   members: memberModel,
   channels: channelModel,
   messages: messageModel,
+  conversations: conversationModel,
 });
 
 export default schema;

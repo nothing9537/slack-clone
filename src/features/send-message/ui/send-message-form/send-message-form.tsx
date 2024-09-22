@@ -28,7 +28,7 @@ const EditorLoader = () => (
 
 const Editor = dynamic(
   () => import("@/shared/ui/editor"),
-  { ssr: false, loading: EditorLoader },
+  { ssr: true, loading: EditorLoader },
 );
 
 export const SendMessageForm: FC<SendChannelMessageFormProps> = ({ channel }) => {

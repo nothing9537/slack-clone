@@ -11,6 +11,7 @@ interface UseSendMessageOptions {
   workspaceId: Id<"workspaces">;
   channelId?: Id<"channels">;
   parentMessageId?: Id<"messages">;
+  conversationId?: Id<"conversations">;
 }
 
 export const useSendMessage = (args: UseSendMessageOptions, options?: CreateMessageOptions) => {

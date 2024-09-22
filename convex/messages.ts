@@ -22,9 +22,9 @@ export const createMessage = mutation({
     body: v.string(),
     images: v.optional(v.array(v.id("_storage"))),
     workspaceId: v.id("workspaces"),
-    channelId: v.optional(v.id("channels")),
+    channelId: v.optional(v.id("channels")), //! either channelId or conversationId must be sent
+    conversationId: v.optional(v.id("conversations")), //! either channelId or conversationId must be sent
     parentMessageId: v.optional(v.id("messages")),
-    // TODO add conversation id
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -35,7 +35,17 @@ export const createMessage = mutation({
 
     const member = await getMemberOrThrow(ctx, args.workspaceId, userId);
 
-    // TODO add conversation id
+    let { conversationId } = args;
+
+    if (!args?.conversationId && !args?.channelId && args?.parentMessageId) {
+      const parentMessage = await ctx.db.get(args.parentMessageId);
+
+      if (!parentMessage) {
+        throw new ConvexError({ message: "Parent message not found." });
+      }
+
+      conversationId = parentMessage.conversationId;
+    }
 
     const messageId = await ctx.db.insert("messages", {
       memberId: member._id,
@@ -44,6 +54,7 @@ export const createMessage = mutation({
       workspaceId: args.workspaceId,
       parentMessageId: args.parentMessageId,
       channelId: args.channelId,
+      conversationId,
       updatedAt: Date.now(),
     });
 
