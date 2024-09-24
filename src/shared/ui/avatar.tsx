@@ -39,7 +39,7 @@ React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      "flex h-full w-full items-center justify-center rounded-full bg-sky-500 text-sm capitalize",
       className,
     )}
     {...props}

@@ -14,7 +14,7 @@ export const Sidebar: FC = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[4.5rem] h-full bg-[#481349] flex flex-col gap-y-4 items-center pt-2 pb-1">
+    <aside className="w-[4.5rem] h-full bg-[#481349] flex flex-col gap-y-4 items-center pt-2 pb-1 overflow-auto app-scrollbar">
       <WorkspaceSwitcher />
       {/* <ScrollArea className="h-full flex flex-col gap-y-4 items-center sm:mr-4"> */}
       <SidebarButton Icon={Home} label="Home" isActive={pathname.includes("/workspace")} />

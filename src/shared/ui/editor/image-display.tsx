@@ -5,7 +5,11 @@ import { X } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
 import { Hint } from "../hint";
-import { EditorValue } from "./editor";
+
+type EditorValue = {
+  images?: File[]; // * available only in "create" variant
+  body: string; // * JSON of `Delta` from quill
+};
 
 interface ImageDisplayProps {
   images: File[];

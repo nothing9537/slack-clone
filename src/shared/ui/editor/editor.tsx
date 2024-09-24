@@ -17,9 +17,9 @@ import { ImageSelector } from "./image-selector";
 import { UpdateVariant } from "./update-variant";
 import { formats } from "./consts/formats";
 import { Emoji } from "./emoji-selector";
+import { ImageDisplay } from "./image-display";
 
 import "quill/dist/quill.snow.css";
-import { ImageDisplay } from "./image-display";
 
 type EditorType = "create" | "update";
 
@@ -210,7 +210,7 @@ export const Editor = memo((props: EditorProps) => {
   const onEmojiSelect = (emojiData: EmojiClickData) => {
     const quill = quillRef.current;
 
-    const index = quill ? quill.getText().length : 0;
+    const index = quill ? quill.getText().length - 1 : 0;
 
     quill?.insertText(index, emojiData.emoji);
   };

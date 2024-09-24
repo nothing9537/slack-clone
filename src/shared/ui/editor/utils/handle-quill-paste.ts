@@ -1,6 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { EditorValue } from "../editor";
+
+type EditorValue = {
+  images?: File[]; // * available only in "create" variant
+  body: string; // * JSON of `Delta` from quill
+};
 
 export const handleQuillPaste = (setImages: Dispatch<SetStateAction<File[]>>, form: UseFormReturn<EditorValue>) => (e: ClipboardEvent) => {
   if (!e.clipboardData) {
