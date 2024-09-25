@@ -1,17 +1,21 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import { AlertTriangle, Loader, MessageSquareIcon, SendHorizonal } from "lucide-react";
 
 import { ChannelItem, ChannelsList, useGetChannels } from "@/entities/channel";
 import { MembersList, useCurrentMember, useCurrentMemberIsAdmin, useGetMembers } from "@/entities/member";
 import { useGetWorkspaceById } from "@/entities/workspace";
-import { useModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
+import { useModal } from "@/shared/lib/hooks";
+import { Id } from "@convex/_generated/dataModel";
 
 import { LoadingFallback } from "../workspace-sidebar-header/loading-fallback";
 import { WorkspaceHeader } from "../workspace-sidebar-header/workspace-sidebar-header";
 import { WorkspaceSection } from "../workspace-section/workspace-section";
 
-export const WorkspaceSidebar: FC = () => {
-  const workspaceId = useWorkspaceIdParams();
+interface WorkspaceSidebarProps {
+  workspaceId: Id<"workspaces">;
+}
+
+export const WorkspaceSidebar: FC<WorkspaceSidebarProps> = memo(({ workspaceId }) => {
   const { onOpen } = useModal();
 
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
@@ -78,4 +82,4 @@ export const WorkspaceSidebar: FC = () => {
       </WorkspaceSection>
     </div>
   );
-};
+});

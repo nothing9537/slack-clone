@@ -1,5 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
-import { FC, memo, ReactNode } from "react";
+import { FC, memo, ReactNode, useEffect, useRef } from "react";
 import { differenceInMinutes } from "date-fns";
 import dynamic from "next/dynamic";
 import { ClassValue } from "clsx";
@@ -52,15 +52,16 @@ const renderMessage = (props: RenderMessageProps) => (item: Message, index: numb
 };
 
 export const MessagesList: FC<MessagesListProps> = memo((props) => {
-  const {
-    items,
-    className,
-    children = null,
-    variant = "channel",
-    currentMember,
-  } = props;
+  const { items, className, children = null, variant = "channel", currentMember } = props;
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const groupedMessages = generateGroupedMessages(items);
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [items]);
 
   return (
     <div className={cn("flex-1 flex flex-col-reverse pb-4 overflow-y-auto app-scrollbar", className)}>
@@ -73,6 +74,7 @@ export const MessagesList: FC<MessagesListProps> = memo((props) => {
             </span>
           </div>
           {messages.map(renderMessage({ variant, currentMember }))}
+          <div className="hidden" ref={bottomRef} />
         </div>
       ))}
       {children}

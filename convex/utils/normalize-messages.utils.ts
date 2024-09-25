@@ -1,14 +1,13 @@
-import { Doc, Id } from "../_generated/dataModel";
+import { Doc } from "../_generated/dataModel";
 import { QueryCtx } from "../_generated/server";
+import { normalizeReactions } from "./normalize-reactions.utils";
 
 import { populateMember } from "./populate-member.utils";
 import { populateReactions } from "./populate-reactions.utils";
 import { populateThread } from "./populate-thread.utils";
 import { populateUser } from "./populate-user.utils";
 
-type DedupedReactions = (Doc<"reactions"> & { count: number; memberIds: Id<"members">[] })[];
-
-export const normalizeMessages = (ctx: QueryCtx) => async (message: Doc<"messages">) => {
+export const normalizeMessage = (ctx: QueryCtx) => async (message: Doc<"messages">) => {
   const member = await populateMember(ctx, message.memberId);
   const user = member ? await populateUser(ctx, member.userId) : null;
 
@@ -16,7 +15,7 @@ export const normalizeMessages = (ctx: QueryCtx) => async (message: Doc<"message
     return null;
   }
 
-  const reactions = await populateReactions(ctx, message._id);
+  const messageReactions = await populateReactions(ctx, message._id);
   const thread = await populateThread(ctx, message._id);
   const images: string[] = [];
   const imageUrlPromises: Promise<string | null>[] = [];
@@ -39,33 +38,14 @@ export const normalizeMessages = (ctx: QueryCtx) => async (message: Doc<"message
     }
   }
 
-  const normalizedReactions = reactions.map((reaction) => {
-    return {
-      ...reaction,
-      count: reactions.filter((r) => r.unified === reaction.unified).length,
-    };
-  });
-
-  const dedupedReactions = normalizedReactions
-    .reduce((acc, reaction) => {
-      const existingReaction = acc.find((r) => r.unified === reaction.unified);
-
-      if (existingReaction) {
-        existingReaction.memberIds = Array.from(new Set([...existingReaction.memberIds, reaction.memberId]));
-      } else {
-        acc.push({ ...reaction, memberIds: [reaction.memberId] });
-      }
-
-      return acc;
-    }, [] as DedupedReactions)
-    .map(({ memberId: _memberId, ...rest }) => rest);
+  const reactions = normalizeReactions(messageReactions);
 
   return {
     ...message,
     images,
     member,
     user,
-    reactions: dedupedReactions,
+    reactions,
     threadCount: thread.count,
     threadImage: thread.image,
     threadTimestamp: thread.timestamp,

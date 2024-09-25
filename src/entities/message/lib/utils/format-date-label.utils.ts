@@ -12,5 +12,5 @@ export const formatDateLabel = (dateString: string) => {
     return "Yesterday";
   }
 
-  return format(date, "EEEE, MMMM d");
+  return format(date, "EEEE, MMMM d, y");
 };

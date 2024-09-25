@@ -4,6 +4,8 @@ import { RendererProps } from "@/shared/ui/renderer";
 import { Member } from "@/entities/member";
 import { useToggle } from "@/shared/lib/hooks/use-toggle";
 import { cn } from "@/shared/lib/utils/cn";
+import { usePanel } from "@/shared/lib/hooks/use-panel";
+import { Id } from "@convex/_generated/dataModel";
 
 import { Message } from "../../model/types/message-services.types";
 import { useParseUrlImages } from "../../lib/hooks/use-parse-url-images.hook";
@@ -11,6 +13,7 @@ import { UpdateMessageForm } from "../update-message-form/update-message-form";
 import { useHandleDeleteMessage } from "../../lib/hooks/use-delete-message.hook";
 import { useHandleToggleReaction } from "../../lib/hooks/use-toggle-reaction.hook";
 import { BaseMessageItemProps } from "../../model/types/message-item-props.types";
+import { useParentMessageId } from "../../lib/hooks/use-parent-message-id.hook";
 import { CompactMessageItem } from "./compact-message-item";
 import { FullMessageItem } from "./full-message-item";
 import { MessageItemToolbar } from "./message-item-toolbar";
@@ -31,11 +34,16 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
   const [isEditing, setIsEditing] = useToggle(false);
   const [messageImages, isImagesFetching] = useParseUrlImages(item, isEditing);
   const { ConfirmDeleteModal, isDeleting, handleDelete } = useHandleDeleteMessage(item);
+  const { onPanelOpen } = usePanel<Id<"messages">>(useParentMessageId);
   const handleReaction = useHandleToggleReaction(item);
 
   const handleSetIsEditing = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     setIsEditing(e);
   }, [setIsEditing]);
+
+  const handleThread = useCallback(() => {
+    onPanelOpen(item._id);
+  }, [item, onPanelOpen]);
 
   const commonMessageItemProps = useMemo<BaseMessageItemProps>(() => ({
     item, Renderer, onReactionChange: handleReaction, currentMember,
@@ -74,7 +82,7 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
           hideThreadButton={hideThreadButton}
           setIsEditing={handleSetIsEditing}
           handleReaction={handleReaction}
-          handleThread={() => { }}
+          handleThread={handleThread}
           handleDelete={handleDelete}
         />
       </div>

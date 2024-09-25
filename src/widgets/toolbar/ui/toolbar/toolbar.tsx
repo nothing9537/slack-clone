@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import { Info, Loader, Search } from "lucide-react";
 
 import { Button } from "@/shared/ui/button";
 import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { useGetWorkspaceById } from "@/entities/workspace";
 
-export const Toolbar: FC = () => {
+export const Toolbar: FC = memo(() => {
   const workspaceId = useWorkspaceIdParams();
   const [workspace, isLoading] = useGetWorkspaceById({ workspaceId });
 
@@ -33,4 +33,4 @@ export const Toolbar: FC = () => {
       </div>
     </nav>
   );
-};
+});

@@ -4,7 +4,9 @@ import { paginationOptsValidator } from "convex/server";
 
 import { mutation, query } from "./_generated/server";
 import { getMemberOrThrow } from "./utils/get-member-or-throw.utils";
-import { normalizeMessages } from "./utils/normalize-messages.utils";
+import { normalizeMessage } from "./utils/normalize-messages.utils";
+import { populateMember } from "./utils/populate-member.utils";
+import { populateUser } from "./utils/populate-user.utils";
 
 export const createMessage = mutation({
   args: {
@@ -85,7 +87,7 @@ export const getMessages = query({
       .order("desc")
       .paginate(args.paginationOpts);
 
-    const page = await Promise.all(results.page.map(normalizeMessages(ctx)));
+    const page = await Promise.all(results.page.map(normalizeMessage(ctx)));
 
     return {
       ...results,
@@ -155,5 +157,46 @@ export const deleteMessage = mutation({
     await ctx.db.delete(args.messageId);
 
     return args.messageId;
+  },
+});
+
+export const getMessageById = query({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return null;
+    }
+
+    const message = await ctx.db.get(args.messageId);
+
+    if (!message) {
+      return null;
+    }
+
+    const currentMember = await getMemberOrThrow(ctx, message.workspaceId, userId);
+
+    if (!currentMember) {
+      return null;
+    }
+
+    const member = await populateMember(ctx, message.memberId);
+
+    if (!member) {
+      return null;
+    }
+
+    const user = await populateUser(ctx, userId);
+
+    if (!user) {
+      return null;
+    }
+
+    const normalizedMessage = await normalizeMessage(ctx)(message);
+
+    return normalizedMessage;
   },
 });
