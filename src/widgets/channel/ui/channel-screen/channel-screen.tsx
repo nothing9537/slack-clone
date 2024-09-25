@@ -1,18 +1,19 @@
 import { FC } from "react";
 import { Loader } from "lucide-react";
 
-import { SendMessageForm } from "@/features/send-message";
-import { MessagesList, useGetMessages } from "@/entities/message";
+import { MessagesList, SendMessageForm, useGetMessages } from "@/entities/message";
 import { Channel } from "@/entities/channel";
+import { Member } from "@/entities/member";
 
 import { ChannelHeader } from "../channel-header/channel-header";
 import { ChannelHero } from "../channel-hero/channel-hero";
 
 interface ChannelScreenProps {
   channel: NonNullable<Channel>;
+  currentMember: NonNullable<Member>;
 }
 
-export const ChannelScreen: FC<ChannelScreenProps> = ({ channel }) => {
+export const ChannelScreen: FC<ChannelScreenProps> = ({ channel, currentMember }) => {
   const [messages, status] = useGetMessages({ channelId: channel._id });
 
   if (status === "LoadingFirstPage") {
@@ -26,7 +27,7 @@ export const ChannelScreen: FC<ChannelScreenProps> = ({ channel }) => {
   return (
     <div className="flex flex-col h-full">
       <ChannelHeader channel={channel} />
-      <MessagesList items={messages} isCompact={false}>
+      <MessagesList items={messages} currentMember={currentMember}>
         <ChannelHero channel={channel} />
       </MessagesList>
       <div className="px-5 mt-2">

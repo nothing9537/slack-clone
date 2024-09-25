@@ -1,5 +1,7 @@
 import { FC, memo, ReactNode, useCallback, useState } from "react";
-import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
+import { EmojiClickData, Theme } from "emoji-picker-react";
+import dynamic from "next/dynamic";
+import { Loader } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -7,20 +9,57 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 interface EmojiPopoverProps {
   children: ReactNode;
   hint?: string;
-  onEmojiSelect: (emojiData: EmojiClickData) => void;
+  onEmojiClick?: (emojiData: EmojiClickData) => void;
+  onReactionClick?: (emojiData: EmojiClickData) => void;
+  isReactionPicker?: boolean;
+  closeOnSelect?: boolean;
 }
 
-export const EmojiPopover: FC<EmojiPopoverProps> = memo(({ children, hint = "Emoji", onEmojiSelect }) => {
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
+  ssr: false,
+  loading: () => (
+    <Loader className="size-4 animate-spin" />
+  ),
+});
+
+export const EmojiPopover: FC<EmojiPopoverProps> = memo(({
+  children,
+  hint = "Emoji",
+  onEmojiClick,
+  onReactionClick,
+  isReactionPicker = false,
+  closeOnSelect = false,
+}) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
-  const onEmoji = useCallback((event: EmojiClickData) => {
-    onEmojiSelect(event);
+  const onEmojiSelect = useCallback((event: EmojiClickData) => {
+    onEmojiClick?.(event);
+
+    if (closeOnSelect) {
+      setIsPopoverOpen(false);
+    }
+
+    console.log("emoji event", event);
 
     setTimeout(() => {
       setIsTooltipOpen(false);
     }, 500);
-  }, [onEmojiSelect]);
+  }, [onEmojiClick, closeOnSelect]);
+
+  const onReactionSelect = useCallback((event: EmojiClickData) => {
+    onReactionClick?.(event);
+
+    if (closeOnSelect) {
+      setIsPopoverOpen(false);
+    }
+
+    console.log("reaction event", event);
+
+    setTimeout(() => {
+      setIsTooltipOpen(false);
+    }, 500);
+  }, [onReactionClick, closeOnSelect]);
 
   return (
     <TooltipProvider>
@@ -38,7 +77,9 @@ export const EmojiPopover: FC<EmojiPopoverProps> = memo(({ children, hint = "Emo
         <PopoverContent className="p-0 w-full border-none shadow-none">
           <EmojiPicker
             theme={Theme.LIGHT}
-            onEmojiClick={onEmoji}
+            onEmojiClick={onEmojiSelect}
+            onReactionClick={onReactionSelect}
+            reactionsDefaultOpen={isReactionPicker}
           />
         </PopoverContent>
       </Popover>

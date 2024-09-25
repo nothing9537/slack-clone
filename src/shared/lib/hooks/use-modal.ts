@@ -3,7 +3,14 @@ import { devtools } from "zustand/middleware";
 
 import { ModalData } from "../../types";
 
-type ModalType = "workspaceCreationModal" | "workspacePreferencesModal" | "createChannelModal" | "inviteModal" | "joinByCodeModal" | "channelPreferencesModal";
+type ModalType =
+  "workspaceCreationModal"
+  | "workspacePreferencesModal"
+  | "createChannelModal"
+  | "inviteModal"
+  | "joinByCodeModal"
+  | "channelPreferencesModal"
+  | "messageDeleteModal";
 
 interface ModalStore {
   /**

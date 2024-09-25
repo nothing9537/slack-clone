@@ -1,4 +1,5 @@
 import { Channel } from "@/entities/channel";
+import { Message } from "@/entities/message";
 import { Workspace } from "@/entities/workspace";
 
 export interface WorkspacePreferencesModalData {
@@ -17,4 +18,13 @@ export interface ChannelPreferencesModalData {
   channel?: NonNullable<Channel>;
 }
 
-export type ModalData = WorkspacePreferencesModalData | CreateChannelModalData | WorkspaceInviteModalData | ChannelPreferencesModalData;
+export interface MessageDeleteModalData {
+  message?: NonNullable<Message>;
+}
+
+export type ModalData =
+  WorkspacePreferencesModalData
+  | CreateChannelModalData
+  | WorkspaceInviteModalData
+  | ChannelPreferencesModalData
+  | MessageDeleteModalData;

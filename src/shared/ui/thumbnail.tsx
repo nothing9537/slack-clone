@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { FC } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./dialog";
 
 interface ThumbnailProps {
   src: string | null | undefined;
@@ -23,11 +23,13 @@ export const Thumbnail: FC<ThumbnailProps> = ({ src }) => {
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-3xl flex items-center justify-center p-8">
-        <img
-          src={src}
-          alt="Message"
-          className="rounded-md object-cover"
-        />
+        <DialogTitle>
+          <img
+            src={src}
+            alt="Message"
+            className="rounded-md object-cover"
+          />
+        </DialogTitle>
       </DialogContent>
     </Dialog>
   );

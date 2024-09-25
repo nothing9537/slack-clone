@@ -93,3 +93,67 @@ export const getMessages = query({
     };
   },
 });
+
+export const updateMessage = mutation({
+  args: {
+    messageId: v.id("messages"),
+    body: v.string(),
+    images: v.optional(v.array(v.id("_storage"))),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const message = await ctx.db.get(args.messageId);
+
+    if (!message) {
+      throw new ConvexError({ message: "Message not found." });
+    }
+
+    const member = await getMemberOrThrow(ctx, message.workspaceId, userId);
+
+    if (!member || member._id !== message.memberId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    await ctx.db.patch(args.messageId, {
+      body: args.body,
+      images: args?.images,
+      updatedAt: Date.now(),
+    });
+
+    return args.messageId;
+  },
+});
+
+export const deleteMessage = mutation({
+  args: {
+    messageId: v.id("messages"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const message = await ctx.db.get(args.messageId);
+
+    if (!message) {
+      throw new ConvexError({ message: "Message not found." });
+    }
+
+    const member = await getMemberOrThrow(ctx, message.workspaceId, userId);
+
+    if (!member || member._id !== message.memberId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    await ctx.db.delete(args.messageId);
+
+    return args.messageId;
+  },
+});

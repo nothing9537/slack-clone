@@ -2,7 +2,7 @@ import { ComponentType } from "react";
 
 import { RendererProps } from "@/shared/ui/renderer";
 
-import { Message } from "./get-messages-service.types";
+import { Message } from "./message-services.types";
 
 export interface BaseMessageItemProps {
   item: Message;

@@ -18,7 +18,7 @@ export const Hint: FC<HintProps> = ({ label, children, side, align }) => {
           {children}
         </TooltipTrigger>
         <TooltipContent side={side} align={align} className="bg-black text-white border border-white/5">
-          <p className="font-medium text-sx">{label}</p>
+          <p className="font-medium text-xs">{label}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

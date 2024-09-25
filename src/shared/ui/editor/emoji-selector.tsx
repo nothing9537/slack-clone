@@ -15,7 +15,7 @@ interface EmojiProps {
 export const Emoji: FC<EmojiProps> = memo(({ onEmojiSelect, disabled }) => {
   return (
     <Hint label="Emoji">
-      <EmojiPopover onEmojiSelect={onEmojiSelect}>
+      <EmojiPopover onEmojiClick={onEmojiSelect}>
         <Button disabled={disabled} size="iconSm" variant="ghost" type="button">
           <Smile className="size-4" />
         </Button>

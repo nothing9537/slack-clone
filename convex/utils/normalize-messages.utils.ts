@@ -42,13 +42,13 @@ export const normalizeMessages = (ctx: QueryCtx) => async (message: Doc<"message
   const normalizedReactions = reactions.map((reaction) => {
     return {
       ...reaction,
-      count: reactions.filter((r) => r.value === reaction.value).length,
+      count: reactions.filter((r) => r.unified === reaction.unified).length,
     };
   });
 
   const dedupedReactions = normalizedReactions
     .reduce((acc, reaction) => {
-      const existingReaction = acc.find((r) => r.value === reaction.value);
+      const existingReaction = acc.find((r) => r.unified === reaction.unified);
 
       if (existingReaction) {
         existingReaction.memberIds = Array.from(new Set([...existingReaction.memberIds, reaction.memberId]));

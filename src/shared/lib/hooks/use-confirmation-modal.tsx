@@ -9,12 +9,12 @@ interface UseConfirmModalParams {
   description: string;
 }
 
-export const useConfirmModal = (params: UseConfirmModalParams): [() => React.JSX.Element, () => Promise<unknown>] => {
+export const useConfirmModal = (params: UseConfirmModalParams): [() => React.JSX.Element, () => Promise<boolean>] => {
   const { title, description } = params;
 
   const [promise, setPromise] = useState<{ resolve: ((value: boolean) => void) } | null>(null);
 
-  const confirm = useCallback(() => new Promise((resolve) => {
+  const confirm = useCallback(() => new Promise<boolean>((resolve) => {
     setPromise({ resolve });
   }), []);
 

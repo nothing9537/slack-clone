@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable consistent-return */
 import Quill, { type QuillOptions } from "quill";
-import { ButtonHTMLAttributes, memo, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ButtonHTMLAttributes, memo, MouseEvent, MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Delta, Op } from "quill/core";
 import { MdSend } from "react-icons/md";
 import { EmojiClickData } from "emoji-picker-react";
@@ -38,7 +38,7 @@ type EditorType = "create" | "update";
  * console.log(deltaContent);
  */
 export type EditorValue = {
-  images?: File[]; // * available only in "create" variant
+  images?: File[];
   body: string; // * JSON of `Delta` from quill
 };
 
@@ -46,18 +46,19 @@ const actionClassName = "bg-[#007a5a] hover:bg-[#007a5a]/80 text-white";
 const actionClassNameDisabled = "bg-white hover:bg-white text-muted-foreground";
 
 interface EditorProps {
-  onCancel?: () => void;
+  onCancel?: (e: MouseEvent<HTMLButtonElement>) => void;
   placeholder?: string;
   defaultValue?: Delta | Op[];
   disabled?: boolean;
   innerRef?: MutableRefObject<Quill | null>;
   variant?: EditorType;
   actionButtonType?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+  initialImages?: File[];
 }
 
 export const Editor = memo((props: EditorProps) => {
   const [text, setText] = useState("");
-  const [images, setImages] = useState<File[]>([]);
+  const [images, setImages] = useState<File[]>(props?.initialImages || []);
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
   const formContext = useFormContext<EditorValue>();
 
@@ -92,12 +93,10 @@ export const Editor = memo((props: EditorProps) => {
     disabledRef.current = disabled;
   });
 
-  const onSaveSubmitAction = useCallback((passImages: boolean) => {
+  const onSaveSubmitAction = useCallback(() => {
     formContext.setValue("body", JSON.stringify(quillRef.current?.getContents()));
 
-    if (passImages) {
-      formContext.setValue("images", imagesRef.current);
-    }
+    formContext.setValue("images", imagesRef.current);
 
     setImages([]);
   }, [formContext]);
@@ -137,11 +136,7 @@ export const Editor = memo((props: EditorProps) => {
                   return;
                 }
 
-                if (variant === "create") {
-                  onSaveSubmitAction(true);
-                } else {
-                  onSaveSubmitAction(false);
-                }
+                onSaveSubmitAction();
 
                 virtualSubmitButtonRef.current?.click();
               },
@@ -265,12 +260,10 @@ export const Editor = memo((props: EditorProps) => {
             isToolbarVisible={isToolbarVisible}
             disabled={disabled}
           />
-          {variant === "create" && (
-            <Emoji
-              disabled={disabled}
-              onEmojiSelect={onEmojiSelect}
-            />
-          )}
+          <Emoji
+            disabled={disabled}
+            onEmojiSelect={onEmojiSelect}
+          />
           <ImageSelector
             disabled={disabled}
             imageElementRef={imageElementRef}
@@ -281,6 +274,7 @@ export const Editor = memo((props: EditorProps) => {
               actionClassName={actionClassName}
               actionButtonType={actionButtonType}
               saveAction={onSaveSubmitAction}
+              onCancelAction={onCancel}
             />
           )}
           {variant === "create" && (
@@ -293,7 +287,7 @@ export const Editor = memo((props: EditorProps) => {
                 isEmpty && actionClassNameDisabled,
               )}
               type={actionButtonType}
-              onClick={() => onSaveSubmitAction(true)}
+              onClick={() => onSaveSubmitAction()}
             >
               <MdSend className="size-4" />
             </Button>
@@ -308,7 +302,7 @@ export const Editor = memo((props: EditorProps) => {
           )}
         >
           <p>
-            <strong>Shift + Enter / Enter</strong>
+            <strong>Shift + Enter(Return)</strong>
             {" "}
             to add a new line
           </p>
