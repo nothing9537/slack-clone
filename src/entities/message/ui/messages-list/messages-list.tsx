@@ -18,9 +18,6 @@ const TIME_TOLERANCE = 5;
 
 interface MessagesListProps {
   items: GetMessagesResponseType;
-  // loadMore: () => void;
-  // isLoadingMode: boolean;
-  // canLoadMore: boolean;
   variant?: MessagesListVariant;
   children?: ReactNode;
   className?: ClassValue;
@@ -59,9 +56,6 @@ export const MessagesList: FC<MessagesListProps> = memo((props) => {
     items,
     className,
     children = null,
-    // loadMore,
-    // isLoadingMode,
-    // canLoadMore,
     variant = "channel",
     currentMember,
   } = props;

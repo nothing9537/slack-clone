@@ -1,9 +1,10 @@
 import { usePaginatedQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
+
 import { GetMessagesResponseType } from "../../types/message-services.types";
 
-const BATCH_SIZE = 20;
+const BATCH_SIZE = 10;
 
 interface UseGetMessagesOptions {
   channelId?: Id<"channels">;
