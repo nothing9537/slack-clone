@@ -3,19 +3,22 @@ import { useCallback } from "react";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 
+import { EmojiClickData } from "emoji-picker-react";
 import { MutationServiceOptions } from "@/shared/types";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 
-import { MutateMessageResponseType } from "../../types/message-services.types";
+import { MutateReactionResponseType } from "../../types/message-services.types";
 
-export const useDeleteMessage = (messageId: Id<"messages">, options?: MutationServiceOptions<MutateMessageResponseType>) => {
-  const mutation = useMutation(api.messages.deleteMessage);
+type UseToggleReactionValues = Pick<EmojiClickData, "emoji" | "unified">;
 
-  const mutate = useCallback(async () => {
+export const useToggleReaction = (messageId: Id<"messages">, options?: MutationServiceOptions<MutateReactionResponseType, UseToggleReactionValues>) => {
+  const mutation = useMutation(api.reactions.toggleReaction);
+
+  const mutate = useCallback(async (values: UseToggleReactionValues) => {
     try {
-      const response = await mutation({ messageId });
-      options?.onSuccess?.(response);
+      const response = await mutation({ messageId, native: values.emoji, unified: values.unified });
+      options?.onSuccess?.(response, values);
 
       return response;
     } catch (error) {

@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 
-import { GetMessagesResponseType } from '../../model/types/message-services.types';
+import { GetMessagesResponseType } from "../../model/types/message-services.types";
 
 type GroupedMessagesType = Record<string, GetMessagesResponseType>;
 

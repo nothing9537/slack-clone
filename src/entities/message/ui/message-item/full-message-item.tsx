@@ -4,12 +4,13 @@ import { format } from "date-fns";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Hint } from "@/shared/ui/hint";
-import { Thumbnail } from "@/shared/ui/thumbnail";
 
 import { BaseMessageItemProps } from "../../model/types/message-item-props.types";
 import { formatFullTime } from "../../lib/utils/format-full-time.utils";
+import { ReactionsBar } from "./reactions-bar";
+import { ImageThumbnails } from "./image-thumbnails";
 
-export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer }) => {
+export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember }) => {
   return (
     <div className="flex items-start gap-2">
       <Avatar className="rounded-full">
@@ -31,19 +32,15 @@ export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer }) =>
           </Hint>
         </div>
         <Renderer body={item.body} />
-        {item.images.length !== 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {item.images.map((imageURL) => (
-              <Thumbnail
-                src={imageURL}
-                key={imageURL}
-              />
-            ))}
-          </div>
-        )}
+        <ImageThumbnails message={item} />
         {item?.updatedAt && (
           <span className="text-sm text-muted-foreground">(edited)</span>
         )}
+        <ReactionsBar
+          message={item}
+          onChange={onReactionChange}
+          currentMember={currentMember}
+        />
       </div>
     </div>
   );

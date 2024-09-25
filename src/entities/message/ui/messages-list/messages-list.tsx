@@ -7,7 +7,7 @@ import { ClassValue } from "clsx";
 import { cn } from "@/shared/lib/utils/cn";
 import { Member } from "@/entities/member";
 
-import { GetMessagesResponseType, Message } from '../../model/types/message-services.types';
+import { GetMessagesResponseType, Message } from "../../model/types/message-services.types";
 import { MessageItem } from "../message-item/message-item";
 import { formatDateLabel } from "../../lib/utils/format-date-label.utils";
 import { generateGroupedMessages } from "../../lib/utils/generate-grouped-messages.utils";

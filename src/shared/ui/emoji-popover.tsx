@@ -40,8 +40,6 @@ export const EmojiPopover: FC<EmojiPopoverProps> = memo(({
       setIsPopoverOpen(false);
     }
 
-    console.log("emoji event", event);
-
     setTimeout(() => {
       setIsTooltipOpen(false);
     }, 500);
@@ -53,8 +51,6 @@ export const EmojiPopover: FC<EmojiPopoverProps> = memo(({
     if (closeOnSelect) {
       setIsPopoverOpen(false);
     }
-
-    console.log("reaction event", event);
 
     setTimeout(() => {
       setIsTooltipOpen(false);
@@ -76,6 +72,7 @@ export const EmojiPopover: FC<EmojiPopoverProps> = memo(({
         </Tooltip>
         <PopoverContent className="p-0 w-full border-none shadow-none">
           <EmojiPicker
+            lazyLoadEmojis
             theme={Theme.LIGHT}
             onEmojiClick={onEmojiSelect}
             onReactionClick={onReactionSelect}

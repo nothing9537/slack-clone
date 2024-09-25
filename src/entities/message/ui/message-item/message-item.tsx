@@ -1,16 +1,16 @@
-import { ComponentType, FC, memo, MouseEvent, useCallback, useState } from "react";
+import { ComponentType, FC, memo, MouseEvent, useCallback, useMemo } from "react";
 
-import { toast } from "sonner";
 import { RendererProps } from "@/shared/ui/renderer";
 import { Member } from "@/entities/member";
 import { useToggle } from "@/shared/lib/hooks/use-toggle";
 import { cn } from "@/shared/lib/utils/cn";
-import { useConfirmModal } from "@/shared/lib/hooks";
 
 import { Message } from "../../model/types/message-services.types";
 import { useParseUrlImages } from "../../lib/hooks/use-parse-url-images.hook";
 import { UpdateMessageForm } from "../update-message-form/update-message-form";
-import { useHandleDeleteMessage } from "../../model/services/delete-message/delete-message.service";
+import { useHandleDeleteMessage } from "../../lib/hooks/use-delete-message.hook";
+import { useHandleToggleReaction } from "../../lib/hooks/use-toggle-reaction.hook";
+import { BaseMessageItemProps } from "../../model/types/message-item-props.types";
 import { CompactMessageItem } from "./compact-message-item";
 import { FullMessageItem } from "./full-message-item";
 import { MessageItemToolbar } from "./message-item-toolbar";
@@ -29,49 +29,23 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
   const isAuthor = item.memberId === currentMember._id;
 
   const [isEditing, setIsEditing] = useToggle(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [ConfirmDeleteModal, confirm] = useConfirmModal({
-    title: "Are you sure you want delete this message?",
-    description: "This message will be delete forever. This action cannot be undone.",
-  });
-
-  if (isCompact) {
-    Element = <CompactMessageItem item={item} Renderer={Renderer} />;
-  } else {
-    Element = <FullMessageItem item={item} Renderer={Renderer} />;
-  }
-
   const [messageImages, isImagesFetching] = useParseUrlImages(item, isEditing);
-  const deleteMessage = useHandleDeleteMessage(item._id, {
-    onSuccess: () => {
-      toast.success("Message action", {
-        description: "Message deleted.",
-      });
-    },
-    onError: (errorMessage) => {
-      toast.error("Message action", {
-        description: errorMessage,
-      });
-    },
-  });
+  const { ConfirmDeleteModal, isDeleting, handleDelete } = useHandleDeleteMessage(item);
+  const handleReaction = useHandleToggleReaction(item);
 
   const handleSetIsEditing = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     setIsEditing(e);
   }, [setIsEditing]);
 
-  const handleDelete = useCallback(async () => {
-    const isConfirmed = await confirm();
+  const commonMessageItemProps = useMemo<BaseMessageItemProps>(() => ({
+    item, Renderer, onReactionChange: handleReaction, currentMember,
+  }), [Renderer, currentMember, handleReaction, item]);
 
-    if (!isConfirmed) {
-      return;
-    }
-
-    setIsDeleting(true);
-
-    deleteMessage().then(() => {
-      setIsDeleting(false);
-    });
-  }, [confirm, deleteMessage]);
+  if (isCompact) {
+    Element = <CompactMessageItem {...commonMessageItemProps} />;
+  } else {
+    Element = <FullMessageItem {...commonMessageItemProps} />;
+  }
 
   if (isEditing && !isImagesFetching) {
     Element = (
@@ -99,7 +73,7 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
           isAuthor={isAuthor}
           hideThreadButton={hideThreadButton}
           setIsEditing={handleSetIsEditing}
-          handleReaction={() => { }}
+          handleReaction={handleReaction}
           handleThread={() => { }}
           handleDelete={handleDelete}
         />

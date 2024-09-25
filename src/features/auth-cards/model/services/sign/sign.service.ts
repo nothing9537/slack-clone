@@ -25,9 +25,7 @@ export const useSignService = (flow: SignFlow, form: UseFormReturn<IncomeFormTyp
       .then(() => {
         // console.log(data);
       })
-      .catch((error) => {
-        console.log(error);
-
+      .catch(() => {
         if (flow === "signIn") {
           form.setError("error", { message: "Credentials are invalid" });
         } else {

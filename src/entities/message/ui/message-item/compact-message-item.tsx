@@ -2,12 +2,13 @@ import { FC } from "react";
 import { format } from "date-fns";
 
 import { Hint } from "@/shared/ui/hint";
-import { Thumbnail } from "@/shared/ui/thumbnail";
 
 import { formatFullTime } from "../../lib/utils/format-full-time.utils";
 import { BaseMessageItemProps } from "../../model/types/message-item-props.types";
+import { ReactionsBar } from "./reactions-bar";
+import { ImageThumbnails } from "./image-thumbnails";
 
-export const CompactMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer }) => {
+export const CompactMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember }) => {
   return (
     <div className="flex items-start gap-2">
       <Hint label={formatFullTime(new Date(item._creationTime))}>
@@ -17,19 +18,15 @@ export const CompactMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer })
       </Hint>
       <div className="flex flex-col w-full">
         <Renderer body={item.body} />
-        {item.images.length !== 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {item.images.map((imageURL) => (
-              <Thumbnail
-                src={imageURL}
-                key={imageURL}
-              />
-            ))}
-          </div>
-        )}
+        <ImageThumbnails message={item} />
         {item?.updatedAt && (
           <span className="text-sm text-muted-foreground">(edited)</span>
         )}
+        <ReactionsBar
+          message={item}
+          onChange={onReactionChange}
+          currentMember={currentMember}
+        />
       </div>
     </div>
   );

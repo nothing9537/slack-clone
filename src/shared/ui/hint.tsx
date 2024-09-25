@@ -4,7 +4,7 @@ import { FC, ReactNode } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 interface HintProps {
-  label: string;
+  label: string | ReactNode;
   children: ReactNode;
   side?: "top" | "bottom" | "left" | "right",
   align?: "start" | "end" | "center",

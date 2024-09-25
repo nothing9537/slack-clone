@@ -19,7 +19,7 @@ export const ChannelScreen: FC<ChannelScreenProps> = ({ channel, currentMember }
   if (status === "LoadingFirstPage") {
     return (
       <div className="h-full flex flex-1 items-center justify-center">
-        <Loader className="animate-spin size-6 text-muted-foreground" />
+        <Loader className="animate-spin size-5 text-muted-foreground" />
       </div>
     );
   }

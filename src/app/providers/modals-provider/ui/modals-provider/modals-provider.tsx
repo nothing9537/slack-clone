@@ -11,7 +11,6 @@ import { InviteModal } from "@/features/invite";
 import { Mounted } from "@/shared/lib/components/mounted";
 import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { useChannelIdParams } from "@/shared/lib/hooks/use-channel-id";
-import { DeleteMessageModal } from "@/entities/message";
 
 export const ModalsProvider: FC = () => {
   const workspaceId = useWorkspaceIdParams();
@@ -30,8 +29,6 @@ export const ModalsProvider: FC = () => {
       {channelId && (
         <ChannelPreferencesModal workspaceId={workspaceId} />
       )}
-
-      <DeleteMessageModal />
     </Mounted>
   );
 };
