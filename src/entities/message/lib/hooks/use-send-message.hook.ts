@@ -10,20 +10,22 @@ import { Id } from "@convex/_generated/dataModel";
 
 import { SendMessageSchemaType } from "../../model/types/message-schemas.types";
 import { useSendMessage } from "../../model/services/send-message/send-message.service";
+import { generateImageStorageURLs } from "../utils/generate-image-upload-urls.utils";
 
 interface UseHandleSendMessageOptions {
   setForceEditorRerender: Dispatch<SetStateAction<number>>;
   channel: NonNullable<Channel>;
   form: UseFormReturn<SendMessageSchemaType>;
+  parentMessageId?: Id<"messages">;
 }
 
 export const useHandleSendMessage = (options: UseHandleSendMessageOptions) => {
-  const { channel } = options;
+  const { channel, parentMessageId } = options;
 
   const generateImageUploadURLs = useGenerateUploadURLs({
     onError: (errorMessage) => {
       toast.error("Images action", {
-        description: errorMessage || "Generate upload images URL.",
+        description: errorMessage || "Failed to generate upload images URL.",
       });
     },
   });
@@ -31,6 +33,7 @@ export const useHandleSendMessage = (options: UseHandleSendMessageOptions) => {
   const sendMessage = useSendMessage({
     workspaceId: channel.workspaceId,
     channelId: channel._id,
+    parentMessageId,
   }, {
     onSettled: () => {
       options.form.reset({});
@@ -40,28 +43,15 @@ export const useHandleSendMessage = (options: UseHandleSendMessageOptions) => {
   });
 
   const cb = useCallback(async (data: SendMessageSchemaType) => {
-    const imageUploadURLS = await generateImageUploadURLs(data.images?.length || 0);
+    const imageUploadURLs = await generateImageUploadURLs(data.images?.length || 0);
     const imagesURLs: Id<"_storage">[] = [];
 
-    if (imageUploadURLS && data.images?.length) {
+    if (imageUploadURLs && data.images?.length) {
       const { images } = data;
 
-      for (let i = 0; i < images.length; i += 1) {
-        const image = images[i];
-        const uploadURL = imageUploadURLS[i];
+      const storageIDs = await generateImageStorageURLs(images, imageUploadURLs);
 
-        const res = await fetch(uploadURL, {
-          method: "POST",
-          headers: { "Content-Type": image.type },
-          body: image,
-        });
-
-        if (res.ok) {
-          const { storageId } = await res.json() as { storageId: Id<"_storage"> };
-
-          imagesURLs.push(storageId);
-        }
-      }
+      imagesURLs.push(...storageIDs);
     }
 
     return sendMessage(data, imagesURLs);

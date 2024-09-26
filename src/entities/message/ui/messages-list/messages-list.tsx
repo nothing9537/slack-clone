@@ -64,7 +64,7 @@ export const MessagesList: FC<MessagesListProps> = memo((props) => {
   }, [items]);
 
   return (
-    <div className={cn("flex-1 flex flex-col-reverse pb-4 overflow-y-auto app-scrollbar", className)}>
+    <div className={cn("flex flex-col-reverse pb-4 overflow-y-auto app-scrollbar", className, variant !== "thread" && "flex-1")}>
       {Object.entries(groupedMessages || {}).map(([dateKey, messages]) => (
         <div key={dateKey}>
           <div className="text-center my-2 relative">
