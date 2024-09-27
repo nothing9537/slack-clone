@@ -9,8 +9,9 @@ import { BaseMessageItemProps } from "../../model/types/message-item-props.types
 import { formatFullTime } from "../../lib/utils/format-full-time.utils";
 import { ReactionsBar } from "./reactions-bar";
 import { ImageThumbnails } from "./image-thumbnails";
+import { ThreadBar } from "./thread-bar";
 
-export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember }) => {
+export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember, handleThread }) => {
   return (
     <div className="flex items-start gap-2">
       <Avatar className="rounded-full">
@@ -41,6 +42,7 @@ export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onRe
           onChange={onReactionChange}
           currentMember={currentMember}
         />
+        <ThreadBar item={item} onThreadOpen={handleThread} />
       </div>
     </div>
   );

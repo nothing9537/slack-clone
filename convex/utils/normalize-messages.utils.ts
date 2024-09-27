@@ -47,7 +47,8 @@ export const normalizeMessage = (ctx: QueryCtx) => async (message: Doc<"messages
     user,
     reactions,
     threadCount: thread.count,
-    threadImage: thread.image,
-    threadTimestamp: thread.timestamp,
+    threadLastMessageImage: thread.image,
+    threadLastMessageTimestamp: thread.timestamp,
+    threadLastMessageUserName: thread.name,
   };
 };

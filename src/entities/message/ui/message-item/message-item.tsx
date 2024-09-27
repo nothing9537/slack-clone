@@ -46,8 +46,8 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
   }, [item, onPanelOpen]);
 
   const commonMessageItemProps = useMemo<BaseMessageItemProps>(() => ({
-    item, Renderer, onReactionChange: handleReaction, currentMember,
-  }), [Renderer, currentMember, handleReaction, item]);
+    item, Renderer, onReactionChange: handleReaction, currentMember, handleThread,
+  }), [Renderer, currentMember, handleReaction, item, handleThread]);
 
   if (isCompact) {
     Element = <CompactMessageItem {...commonMessageItemProps} />;

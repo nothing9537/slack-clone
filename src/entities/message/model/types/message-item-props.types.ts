@@ -11,4 +11,5 @@ export interface BaseMessageItemProps {
   Renderer: ComponentType<RendererProps>;
   onReactionChange: ReturnType<typeof useHandleToggleReaction>;
   currentMember: NonNullable<Member>;
+  handleThread: () => void;
 }

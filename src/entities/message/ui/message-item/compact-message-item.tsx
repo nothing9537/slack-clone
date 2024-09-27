@@ -7,8 +7,9 @@ import { formatFullTime } from "../../lib/utils/format-full-time.utils";
 import { BaseMessageItemProps } from "../../model/types/message-item-props.types";
 import { ReactionsBar } from "./reactions-bar";
 import { ImageThumbnails } from "./image-thumbnails";
+import { ThreadBar } from "./thread-bar";
 
-export const CompactMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember }) => {
+export const CompactMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember, handleThread }) => {
   return (
     <div className="flex items-start gap-2">
       <Hint label={formatFullTime(new Date(item._creationTime))}>
@@ -27,6 +28,7 @@ export const CompactMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, o
           onChange={onReactionChange}
           currentMember={currentMember}
         />
+        <ThreadBar item={item} onThreadOpen={handleThread} />
       </div>
     </div>
   );
