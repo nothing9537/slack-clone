@@ -19,7 +19,7 @@ export const Toolbar: FC = memo(() => {
             Search in:
             {" "}
             {isLoading ? (
-              <Loader className="size-4 animate-spin" />
+              <Loader className="size-5 animate-spin" />
             ) : (
               workspace?.name
             )}

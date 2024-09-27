@@ -15,7 +15,7 @@ export const UserButton: FC = () => {
 
   if (isLoading) {
     return (
-      <Loader className="size-10 animate-spin text-white" />
+      <Loader className="size-5 animate-spin text-white" />
     );
   }
 

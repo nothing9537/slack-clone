@@ -5,6 +5,7 @@ import { useGetMessageById } from "@/entities/message";
 import { useCurrentMember } from "@/entities/member";
 import { useChannelIdParams } from "@/shared/lib/hooks/use-channel-id";
 import { useGetCurrentChannel } from "@/entities/channel";
+import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { Id } from "@convex/_generated/dataModel";
 
 import { ThreadScreen } from "../thread-screen/thread-screen";
@@ -13,7 +14,6 @@ import { ThreadHeader } from "../thread-header/thread-header";
 interface ThreadProps {
   parentMessageId: Id<"messages">;
   onClose: () => void;
-  workspaceId: Id<"workspaces">;
 }
 
 interface ThreadLayoutProps {
@@ -30,8 +30,9 @@ const ThreadLayout = ({ children, onClose }: ThreadLayoutProps) => {
   );
 };
 
-export const Thread: FC<ThreadProps> = ({ parentMessageId, onClose, workspaceId }) => {
+export const Thread: FC<ThreadProps> = ({ parentMessageId, onClose }) => {
   const currentChannelId = useChannelIdParams();
+  const workspaceId = useWorkspaceIdParams();
   const [channel, isChannelLoading] = useGetCurrentChannel({ channelId: currentChannelId });
   const [message, isMessageLoading] = useGetMessageById({ messageId: parentMessageId });
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });

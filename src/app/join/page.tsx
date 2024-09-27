@@ -1,3 +1,3 @@
 "use client";
 
-export { JoinScreen as default } from "@/pages-layer/workspace-join-page";
+export { JoinScreen as default } from "@/pages-layer/workspace-join";

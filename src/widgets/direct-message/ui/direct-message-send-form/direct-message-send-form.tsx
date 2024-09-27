@@ -4,11 +4,13 @@ import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
 import { ClassValue } from "clsx";
 
-import { Message, SendMessageSchema, SendMessageSchemaType, useHandleSendMessage } from "@/entities/message";
+import { SendMessageSchema, SendMessageSchemaType, useHandleSendMessage } from "@/entities/message";
+import { GetOrCreateConversationResponseType } from "@/entities/conversation";
+import { PopulatedMember } from "@/entities/member";
 import { Form } from "@/shared/ui/form";
-import { Channel } from "@/entities/channel";
 import { cn } from "@/shared/lib/utils/cn";
 import { EditorLoader } from "@/shared/ui/editor-loader";
+import { Id } from "@convex/_generated/dataModel";
 
 const Editor = dynamic(() => import("@/shared/ui/editor"), {
   ssr: true,
@@ -16,20 +18,20 @@ const Editor = dynamic(() => import("@/shared/ui/editor"), {
 });
 
 interface ThreadReplyFormProps {
-  threadMessage: NonNullable<Message>;
-  currentChannel: NonNullable<Channel>;
+  workspaceId: Id<"workspaces">;
+  conversation: NonNullable<GetOrCreateConversationResponseType>;
+  otherMember: NonNullable<PopulatedMember>;
   className?: ClassValue;
 }
 
-export const ThreadReplyForm: FC<ThreadReplyFormProps> = ({ threadMessage, currentChannel, className }) => {
+export const DirectMessageSendForm: FC<ThreadReplyFormProps> = ({ className, workspaceId, conversation, otherMember }) => {
   const form = useForm<SendMessageSchemaType>({ resolver: zodResolver(SendMessageSchema) });
   const [forceEditorRerender, setForceEditorRerender] = useState(0);
 
   const handleSendMessage = useHandleSendMessage({
     setForceEditorRerender,
-    channelId: currentChannel._id,
-    workspaceId: currentChannel.workspaceId,
-    parentMessageId: threadMessage._id,
+    workspaceId,
+    conversationId: conversation._id,
     form,
   });
 
@@ -38,7 +40,7 @@ export const ThreadReplyForm: FC<ThreadReplyFormProps> = ({ threadMessage, curre
       <form className={cn("px-5", className)} onSubmit={form.handleSubmit(handleSendMessage)}>
         <Editor
           key={forceEditorRerender}
-          placeholder="Share your thoughts about this thread :)"
+          placeholder={`Send your private message to ${otherMember.user.name || "Workspace Member"}`}
           disabled={form.formState.isSubmitting}
           actionButtonType="submit"
         />

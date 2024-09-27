@@ -29,7 +29,7 @@ export const ChannelsList: FC<ChannelsListProps> = ({ items: channels, isLoading
 
   if (isLoading) {
     return (
-      <Loader className="size-4 animate-spin" />
+      <Loader className="size-5 animate-spin" />
     );
   }
 

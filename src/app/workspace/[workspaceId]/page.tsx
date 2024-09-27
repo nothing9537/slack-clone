@@ -2,11 +2,12 @@
 
 import { FC, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Loader, TriangleAlert } from "lucide-react";
+import { Loader } from "lucide-react";
 
 import { useGetChannels } from "@/entities/channel";
 import { useGetWorkspaceById } from "@/entities/workspace";
 import { useCurrentMember } from "@/entities/member";
+import { NotFoundFallback } from "@/shared/ui/not-found-fallback";
 import { Id } from "@convex/_generated/dataModel";
 
 interface WorkspaceIDPageProps {
@@ -33,7 +34,7 @@ const WorkspaceIDPage: FC<WorkspaceIDPageProps> = ({ params }) => {
   if (isChannelsLoading || isWorkspaceLoading || isMemberLoading) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <Loader className="size-16 animate-spin text-muted-foreground" />
+        <Loader className="size-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -41,10 +42,7 @@ const WorkspaceIDPage: FC<WorkspaceIDPageProps> = ({ params }) => {
   if (!workspace || !channelId || !member) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <div className="flex flex-col items-center justify-center gap-2">
-          <TriangleAlert className="text-destructive" />
-          <p className="text-sm text-muted-foreground">Workspace not found.</p>
-        </div>
+        <NotFoundFallback text="Workspace not found." />
       </div>
     );
   }

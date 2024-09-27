@@ -4,25 +4,23 @@ import { AlertTriangle, Loader, MessageSquareIcon, SendHorizonal } from "lucide-
 import { ChannelItem, ChannelsList, useGetChannels } from "@/entities/channel";
 import { MembersList, useCurrentMember, useCurrentMemberIsAdmin, useGetMembers } from "@/entities/member";
 import { useGetWorkspaceById } from "@/entities/workspace";
-import { useModal } from "@/shared/lib/hooks";
-import { Id } from "@convex/_generated/dataModel";
+import { useModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
+import { useMemberIdParams } from "@/shared/lib/hooks/use-member-id";
 
 import { LoadingFallback } from "../workspace-sidebar-header/loading-fallback";
 import { WorkspaceHeader } from "../workspace-sidebar-header/workspace-sidebar-header";
 import { WorkspaceSection } from "../workspace-section/workspace-section";
 
-interface WorkspaceSidebarProps {
-  workspaceId: Id<"workspaces">;
-}
-
-export const WorkspaceSidebar: FC<WorkspaceSidebarProps> = memo(({ workspaceId }) => {
+export const WorkspaceSidebar: FC = memo(() => {
   const { onOpen } = useModal();
 
+  const workspaceId = useWorkspaceIdParams();
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
   const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ workspaceId });
   const [channels, isChannelsLoading] = useGetChannels({ workspaceId });
   const [members, isMembersLoading] = useGetMembers({ workspaceId });
   const isAdmin = useCurrentMemberIsAdmin({ workspaceId });
+  const currentConversationMemberId = useMemberIdParams();
 
   if (isCurrentMemberLoading || isWorkspaceLoading) {
     return (
@@ -78,6 +76,7 @@ export const WorkspaceSidebar: FC<WorkspaceSidebarProps> = memo(({ workspaceId }
           items={members}
           isLoading={isMembersLoading}
           workspaceId={workspaceId}
+          isItemActive={(item) => item._id === currentConversationMemberId}
         />
       </WorkspaceSection>
     </div>

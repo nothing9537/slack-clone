@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { UseFormReturn } from "react-hook-form";
 import { useGenerateUploadURLs } from "@/shared/api";
 
-import { Channel } from "@/entities/channel";
 import { Id } from "@convex/_generated/dataModel";
 
 import { SendMessageSchemaType } from "../../model/types/message-schemas.types";
@@ -14,13 +13,15 @@ import { generateImageStorageURLs } from "../utils/generate-image-upload-urls.ut
 
 interface UseHandleSendMessageOptions {
   setForceEditorRerender: Dispatch<SetStateAction<number>>;
-  channel: NonNullable<Channel>;
   form: UseFormReturn<SendMessageSchemaType>;
-  parentMessageId?: Id<"messages">;
+  parentMessageId?: Id<"messages">; // ! either channelId, conversationId or parentMessageId must be sent
+  channelId?: Id<"channels">; // ! either channelId, conversationId or parentMessageId must be sent
+  conversationId?: Id<"conversations">; // ! either channelId, conversationId or parentMessageId must be sent
+  workspaceId: Id<"workspaces">;
 }
 
 export const useHandleSendMessage = (options: UseHandleSendMessageOptions) => {
-  const { channel, parentMessageId } = options;
+  const { workspaceId, channelId, conversationId, parentMessageId } = options;
 
   const generateImageUploadURLs = useGenerateUploadURLs({
     onError: (errorMessage) => {
@@ -30,11 +31,7 @@ export const useHandleSendMessage = (options: UseHandleSendMessageOptions) => {
     },
   });
 
-  const sendMessage = useSendMessage({
-    workspaceId: channel.workspaceId,
-    channelId: channel._id,
-    parentMessageId,
-  }, {
+  const sendMessage = useSendMessage({ workspaceId, channelId, parentMessageId, conversationId }, {
     onSettled: () => {
       options.form.reset({});
 

@@ -8,16 +8,12 @@ import { useParentMessageId } from "@/entities/message";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/shared/ui/resizable";
 import { usePanel } from "@/shared/lib/hooks/use-panel";
 import { Thread } from "@/widgets/thread";
-import { Id } from "@convex/_generated/dataModel";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
   toolbar?: ReactNode;
   sidebar?: ReactNode;
   workspaceSidebar?: ReactNode;
-  params: {
-    workspaceId: Id<"workspaces">;
-  };
 }
 
 const PanelFallback = () => (
@@ -29,7 +25,7 @@ const PanelFallback = () => (
   </div>
 );
 
-export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, toolbar, sidebar, workspaceSidebar, params }) => {
+export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, toolbar, sidebar, workspaceSidebar }) => {
   const { queryParam: parentMessageId, onPanelClose } = usePanel(useParentMessageId);
 
   const showPanel = !!parentMessageId;
@@ -45,7 +41,7 @@ export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, too
             minSize={10}
             className="bg-[#5e2c5f]"
           >
-            {workspaceSidebar || <WorkspaceSidebar workspaceId={params.workspaceId} />}
+            {workspaceSidebar || <WorkspaceSidebar />}
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel
@@ -62,7 +58,6 @@ export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, too
                   <Thread
                     parentMessageId={parentMessageId}
                     onClose={onPanelClose}
-                    workspaceId={params.workspaceId}
                   />
                 ) : (
                   <PanelFallback />

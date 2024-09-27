@@ -1,9 +1,10 @@
-import { Doc } from "@convex/_generated/dataModel";
+import { Doc, Id } from "@convex/_generated/dataModel";
 
 import { UpdateChannelSchemaType } from "./mutate-channel-schema.types";
 
 export type MutateChannelRequestType = UpdateChannelSchemaType;
-export type MutateChannelResponseType = Doc<"channels">;
+export type MutateChannelResponseType = Id<"channels">;
+export type DeleteChannelResponseType = Doc<"channels">;
 
 export interface MutateChannelOptions {
   onSuccess?: (data: MutateChannelResponseType, args: UpdateChannelSchemaType) => void;
@@ -13,7 +14,7 @@ export interface MutateChannelOptions {
 }
 
 export interface RemoveChannelOptions {
-  onSuccess?: (data: MutateChannelResponseType) => void;
+  onSuccess?: (data: DeleteChannelResponseType) => void;
   onError?: (errorMessage: string) => void;
   onSettled?: () => void;
   throwError?: boolean;

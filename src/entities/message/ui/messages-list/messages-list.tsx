@@ -39,13 +39,15 @@ const renderMessage = (props: RenderMessageProps) => (item: Message, index: numb
     && prevMessage?.user?._id === item.user?._id
     && differenceInMinutes(new Date(item._creationTime), new Date(prevMessage._creationTime)) < TIME_TOLERANCE;
 
+  const hideThreadButton = props.variant === "thread" || props.variant === "conversation";
+
   return (
     <MessageItem
       key={item._id}
       item={item}
       isCompact={isCompact}
       Renderer={Renderer}
-      hideThreadButton={props.variant === "thread"}
+      hideThreadButton={hideThreadButton}
       currentMember={props.currentMember}
     />
   );

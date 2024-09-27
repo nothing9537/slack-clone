@@ -18,7 +18,7 @@ interface EmojiPopoverProps {
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
   ssr: false,
   loading: () => (
-    <Loader className="size-4 animate-spin" />
+    <Loader className="size-5 animate-spin" />
   ),
 });
 
