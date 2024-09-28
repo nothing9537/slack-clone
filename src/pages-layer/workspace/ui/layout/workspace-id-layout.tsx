@@ -1,13 +1,14 @@
 import { FC, memo, ReactNode } from "react";
-import { TriangleAlert } from "lucide-react";
 
 import { Toolbar } from "@/widgets/toolbar";
 import { Sidebar } from "@/widgets/sidebar";
 import { WorkspaceSidebar } from "@/widgets/workspace-sidebar";
-import { useParentMessageId } from "@/entities/message";
+import { useParentMessageId, useProfileMemberId } from "@/entities/message";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/shared/ui/resizable";
 import { usePanel } from "@/shared/lib/hooks/use-panel";
-import { Thread } from "@/widgets/thread";
+
+import { LayoutPanel } from "../layout-panel/layout-panel";
+import { LayoutPanelId, LayoutPanelType } from "../../model/types/layout-panel.types";
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
@@ -16,19 +17,25 @@ interface WorkspaceLayoutProps {
   workspaceSidebar?: ReactNode;
 }
 
-const PanelFallback = () => (
-  <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-4">
-    <TriangleAlert className="size-5 text-destructive" />
-    <p className="text-destructive">
-      Something went wrong while loading panel... :(
-    </p>
-  </div>
-);
-
 export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, toolbar, sidebar, workspaceSidebar }) => {
-  const { queryParam: parentMessageId, onPanelClose } = usePanel(useParentMessageId);
+  const { queryParam: parentMessageId, onPanelClose: onThreadPanelClose } = usePanel(useParentMessageId);
+  const { queryParam: profileMemberId, onPanelClose: onProfileMemberPanelClose } = usePanel(useProfileMemberId);
 
-  const showPanel = !!parentMessageId;
+  let panelId: LayoutPanelId = null;
+  let onPanelClose: (() => void) | null = null;
+  let panelType: LayoutPanelType | undefined;
+
+  if (parentMessageId) {
+    panelType = "thread";
+    panelId = parentMessageId;
+    onPanelClose = onThreadPanelClose;
+  }
+
+  if (profileMemberId) {
+    panelType = "memberProfile";
+    panelId = profileMemberId;
+    onPanelClose = onProfileMemberPanelClose;
+  }
 
   return (
     <div className="h-full">
@@ -40,6 +47,7 @@ export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, too
             defaultSize={13}
             minSize={10}
             className="bg-[#5e2c5f]"
+            id="sidebar"
           >
             {workspaceSidebar || <WorkspaceSidebar />}
           </ResizablePanel>
@@ -47,21 +55,19 @@ export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, too
           <ResizablePanel
             defaultSize={67}
             minSize={20}
+            id="main"
           >
             {children}
           </ResizablePanel>
-          {showPanel && (
+          {panelType !== undefined && panelId !== null && onPanelClose !== null && (
             <>
               <ResizableHandle withHandle />
-              <ResizablePanel minSize={10} defaultSize={20} id="thread">
-                {parentMessageId ? (
-                  <Thread
-                    parentMessageId={parentMessageId}
-                    onClose={onPanelClose}
-                  />
-                ) : (
-                  <PanelFallback />
-                )}
+              <ResizablePanel minSize={10} defaultSize={20} id="panel">
+                <LayoutPanel
+                  panelId={panelId}
+                  panelType={panelType}
+                  onPanelClose={onPanelClose}
+                />
               </ResizablePanel>
             </>
           )}

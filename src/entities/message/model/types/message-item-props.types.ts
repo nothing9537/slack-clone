@@ -12,4 +12,5 @@ export interface BaseMessageItemProps {
   onReactionChange: ReturnType<typeof useHandleToggleReaction>;
   currentMember: NonNullable<Member>;
   handleThread: () => void;
+  handleMemberProfile: () => void;
 }

@@ -6,7 +6,7 @@ import { usePanel } from "@/shared/lib/hooks/use-panel";
 
 import { useDeleteMessage } from "../../model/services/delete-message/delete-message.service";
 import { Message } from "../../model/types/message-services.types";
-import { useParentMessageId } from "./use-parent-message-id.hook";
+import { useParentMessageId } from "../../model/store/use-parent-message-id.hook";
 
 export const useHandleDeleteMessage = (message: NonNullable<Message>) => {
   const [isDeleting, setIsDeleting] = useState(false);

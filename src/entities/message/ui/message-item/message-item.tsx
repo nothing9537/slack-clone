@@ -13,7 +13,8 @@ import { UpdateMessageForm } from "../update-message-form/update-message-form";
 import { useHandleDeleteMessage } from "../../lib/hooks/use-delete-message.hook";
 import { useHandleToggleReaction } from "../../lib/hooks/use-toggle-reaction.hook";
 import { BaseMessageItemProps } from "../../model/types/message-item-props.types";
-import { useParentMessageId } from "../../lib/hooks/use-parent-message-id.hook";
+import { useParentMessageId } from "../../model/store/use-parent-message-id.hook";
+import { useProfileMemberId } from "../../model/store/use-profile-member-id.hook";
 import { CompactMessageItem } from "./compact-message-item";
 import { FullMessageItem } from "./full-message-item";
 import { MessageItemToolbar } from "./message-item-toolbar";
@@ -34,7 +35,8 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
   const [isEditing, setIsEditing] = useToggle(false);
   const [messageImages, isImagesFetching] = useParseUrlImages(item, isEditing);
   const { ConfirmDeleteModal, isDeleting, handleDelete } = useHandleDeleteMessage(item);
-  const { onPanelOpen } = usePanel<Id<"messages">>(useParentMessageId);
+  const { onPanelOpen: onThreadPanelOpen, onPanelClose: onThreadPanelClose } = usePanel<Id<"messages">>(useParentMessageId);
+  const { onPanelOpen: onMemberProfilePanelOpen, onPanelClose: onProfileMemberPanelClose } = usePanel<Id<"members">>(useProfileMemberId);
   const handleReaction = useHandleToggleReaction(item);
 
   const handleSetIsEditing = useCallback((e: MouseEvent<HTMLButtonElement>) => {
@@ -42,12 +44,18 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
   }, [setIsEditing]);
 
   const handleThread = useCallback(() => {
-    onPanelOpen(item._id);
-  }, [item, onPanelOpen]);
+    onProfileMemberPanelClose();
+    onThreadPanelOpen(item._id);
+  }, [item, onThreadPanelOpen, onProfileMemberPanelClose]);
+
+  const handleMemberProfile = useCallback(() => {
+    onThreadPanelClose();
+    onMemberProfilePanelOpen(item.memberId);
+  }, [item, onMemberProfilePanelOpen, onThreadPanelClose]);
 
   const commonMessageItemProps = useMemo<BaseMessageItemProps>(() => ({
-    item, Renderer, onReactionChange: handleReaction, currentMember, handleThread,
-  }), [Renderer, currentMember, handleReaction, item, handleThread]);
+    item, Renderer, onReactionChange: handleReaction, currentMember, handleThread, handleMemberProfile,
+  }), [Renderer, currentMember, handleReaction, item, handleThread, handleMemberProfile]);
 
   if (isCompact) {
     Element = <CompactMessageItem {...commonMessageItemProps} />;

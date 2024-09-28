@@ -11,10 +11,10 @@ import { ReactionsBar } from "./reactions-bar";
 import { ImageThumbnails } from "./image-thumbnails";
 import { ThreadBar } from "./thread-bar";
 
-export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember, handleThread }) => {
+export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onReactionChange, currentMember, handleThread, handleMemberProfile }) => {
   return (
     <div className="flex items-start gap-2">
-      <Avatar className="rounded-full">
+      <Avatar className="rounded-full cursor-pointer" onClick={handleMemberProfile}>
         <AvatarImage src={item.user?.image} />
         <AvatarFallback className="rounded-full bg-sky-500 text-white text-xs capitalize">
           {item.user.name?.charAt(0)}
@@ -22,7 +22,7 @@ export const FullMessageItem: FC<BaseMessageItemProps> = ({ item, Renderer, onRe
       </Avatar>
       <div className="flex flex-col w-full overflow-hidden">
         <div className="text-sm">
-          <button type="button" className="font-bold text-primary hover:underline transition">
+          <button type="button" className="font-bold text-primary hover:underline transition" onClick={handleMemberProfile}>
             {item.user.name}
           </button>
           <span>&nbsp;</span>
