@@ -1,12 +1,14 @@
+/* eslint-disable no-restricted-syntax */
 import { ConvexError, v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { paginationOptsValidator } from "convex/server";
+import { paginationOptsValidator, PaginationResult } from "convex/server";
 
 import { mutation, query } from "./_generated/server";
 import { getMemberOrThrow } from "./utils/get-member-or-throw.utils";
 import { normalizeMessage } from "./utils/normalize-messages.utils";
 import { populateMember } from "./utils/populate-member.utils";
 import { populateUser } from "./utils/populate-user.utils";
+import { Doc } from "./_generated/dataModel";
 
 export const createMessage = mutation({
   args: {
@@ -57,6 +59,8 @@ export const getMessages = query({
     channelId: v.optional(v.id("channels")),
     conversationId: v.optional(v.id("conversations")),
     parentMessageId: v.optional(v.id("messages")),
+    workspaceId: v.optional(v.id("workspaces")),
+    threads: v.optional(v.boolean()),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
@@ -78,21 +82,37 @@ export const getMessages = query({
       conversationId = parentMessage.conversationId;
     }
 
-    const results = await ctx.db
-      .query("messages")
-      .withIndex("by_channel_id_parent_message_id_conversation_id", (q) => q
-        .eq("channelId", args.channelId)
-        .eq("parentMessageId", args.parentMessageId)
-        .eq("conversationId", conversationId))
-      .order("desc")
-      .paginate(args.paginationOpts);
+    let results: PaginationResult<Doc<"messages">>;
+
+    if (args?.threads) {
+      results = await ctx.db
+        .query("messages")
+        .order("desc")
+        .filter((q) => q.eq(q.field("workspaceId"), args.workspaceId))
+        .paginate(args.paginationOpts);
+    } else {
+      results = await ctx.db
+        .query("messages")
+        .withIndex("by_channel_id_parent_message_id_conversation_id", (q) => q
+          .eq("channelId", args.channelId)
+          .eq("parentMessageId", args.parentMessageId)
+          .eq("conversationId", conversationId))
+        .order("desc")
+        .paginate(args.paginationOpts);
+    }
 
     const page = await Promise.all(results.page.map(normalizeMessage(ctx)));
 
-    return {
+    const res = {
       ...results,
       page: page.filter((m) => m !== null),
     };
+
+    if (args?.threads) {
+      res.page = res.page.filter((m) => m.threadCount !== 0);
+    }
+
+    return res;
   },
 });
 
@@ -152,6 +172,12 @@ export const deleteMessage = mutation({
 
     if (!member || member._id !== message.memberId) {
       throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    if (message?.images) {
+      for await (const imageId of message.images) {
+        await ctx.storage.delete(imageId);
+      }
     }
 
     await ctx.db.delete(args.messageId);

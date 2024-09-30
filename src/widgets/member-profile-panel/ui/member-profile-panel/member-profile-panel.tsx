@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Loader } from "lucide-react";
 
-import { useCurrentMember, useGetMemberById } from "@/entities/member";
+import { useCurrentMember, useCurrentMemberIsAdmin, useGetMemberById } from "@/entities/member";
 import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { Panel } from "@/shared/ui/panel";
 import { NotFoundFallback } from "@/shared/ui/not-found-fallback";
@@ -18,8 +18,9 @@ export const MemberProfilePanel: FC<ThreadProps> = ({ memberId, onClose }) => {
   const workspaceId = useWorkspaceIdParams();
   const [member, isMemberLoading] = useGetMemberById({ memberId });
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
+  const [isAdmin, isAdminLoading] = useCurrentMemberIsAdmin({ workspaceId });
 
-  if (isMemberLoading || isCurrentMemberLoading) {
+  if (isMemberLoading || isCurrentMemberLoading || isAdminLoading) {
     return (
       <Panel onPanelClose={onClose} headerText="Member Profile">
         <div className="h-full flex items-center justify-center">
@@ -48,7 +49,9 @@ export const MemberProfilePanel: FC<ThreadProps> = ({ memberId, onClose }) => {
   return (
     <Panel onPanelClose={onClose} headerText="Member Profile">
       <MemberProfileScreen
+        isCurrentMemberAdmin={isAdmin}
         member={member}
+        currentMember={currentMember}
       />
     </Panel>
   );

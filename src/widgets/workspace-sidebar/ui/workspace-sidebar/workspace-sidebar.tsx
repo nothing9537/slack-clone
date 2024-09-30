@@ -1,5 +1,6 @@
 import { FC, memo } from "react";
 import { AlertTriangle, Loader, MessageSquareIcon, SendHorizonal } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { ChannelItem, ChannelsList, useGetChannels } from "@/entities/channel";
 import { MembersList, useCurrentMember, useCurrentMemberIsAdmin, useGetMembers } from "@/entities/member";
@@ -13,14 +14,15 @@ import { WorkspaceSection } from "../workspace-section/workspace-section";
 
 export const WorkspaceSidebar: FC = memo(() => {
   const { onOpen } = useModal();
+  const pathname = usePathname();
 
   const workspaceId = useWorkspaceIdParams();
+  const currentConversationMemberId = useMemberIdParams();
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
   const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ workspaceId });
   const [channels, isChannelsLoading] = useGetChannels({ workspaceId });
   const [members, isMembersLoading] = useGetMembers({ workspaceId });
-  const isAdmin = useCurrentMemberIsAdmin({ workspaceId });
-  const currentConversationMemberId = useMemberIdParams();
+  const [isAdmin] = useCurrentMemberIsAdmin({ workspaceId });
 
   if (isCurrentMemberLoading || isWorkspaceLoading) {
     return (
@@ -40,19 +42,20 @@ export const WorkspaceSidebar: FC = memo(() => {
   }
 
   return (
-    <div className="flex flex-col bg-[#532c5f] h-full">
+    <div className="flex flex-col bg-[#532c5f] h-full overflow-y-auto app-scrollbar">
       <WorkspaceHeader workspace={workspace} isAdmin={isAdmin} />
       <div className="flex flex-col px-2 mt-6 gap-1">
         <ChannelItem
           label="Threads"
           Icon={MessageSquareIcon}
-          id="threads"
           workspaceId={workspaceId}
+          href={`/workspace/${workspaceId}/threads`}
+          variant={pathname.includes("threads") ? "active" : "default"}
         />
         <ChannelItem
           label="Drafts & Sent"
           Icon={SendHorizonal}
-          id="drafts"
+          href={`/workspace/${workspaceId}/threads`}
           workspaceId={workspaceId}
         />
       </div>

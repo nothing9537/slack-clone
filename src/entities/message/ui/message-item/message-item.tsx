@@ -45,6 +45,7 @@ export const MessageItem: FC<MessageItemProps> = memo(({ item, isCompact, Render
 
   const handleThread = useCallback(() => {
     onProfileMemberPanelClose();
+
     onThreadPanelOpen(item._id);
   }, [item, onThreadPanelOpen, onProfileMemberPanelClose]);
 

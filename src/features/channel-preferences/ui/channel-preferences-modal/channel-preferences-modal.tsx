@@ -20,7 +20,7 @@ export const ChannelPreferencesModal: FC<ChannelPreferencesModalProps> = ({ work
 
   const channelId = useChannelIdParams();
   const [channel, isChannelLoading] = useGetCurrentChannel({ channelId });
-  const isAdmin = useCurrentMemberIsAdmin({ workspaceId });
+  const [isAdmin] = useCurrentMemberIsAdmin({ workspaceId });
 
   const isModalOpen = type === "channelPreferencesModal" && isOpen;
 

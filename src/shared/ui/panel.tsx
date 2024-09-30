@@ -18,7 +18,7 @@ export const PanelFallback = () => (
 
 export const Panel: FC<PanelProps> = ({ children, headerText, onPanelClose }) => {
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-y-auto app-scrollbar">
       <div className="flex justify-between items-center min-h-12 h-full max-h-12 px-4 border-b">
         <p className="text-lg font-bold">{headerText}</p>
         <Button size="iconSm" onClick={onPanelClose} variant="ghost">

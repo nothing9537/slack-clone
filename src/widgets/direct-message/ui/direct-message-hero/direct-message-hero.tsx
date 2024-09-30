@@ -13,7 +13,7 @@ export const DirectMessageHero: FC<ThreadHeroProps> = ({ conversation, otherMemb
   return (
     <div className="mx-5 mb-auto">
       <p className="text-2xl font-bold mb-2">
-        Conversation with
+        Private conversation with
         {" "}
         {otherMember.user.name || "Workspace Member"}
       </p>

@@ -4,7 +4,6 @@ import { Loader, TriangleAlert } from "lucide-react";
 import { useGetMessageById } from "@/entities/message";
 import { useCurrentMember } from "@/entities/member";
 import { useChannelIdParams } from "@/shared/lib/hooks/use-channel-id";
-import { useGetCurrentChannel } from "@/entities/channel";
 import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { Panel } from "@/shared/ui/panel";
 import { Id } from "@convex/_generated/dataModel";
@@ -17,13 +16,12 @@ interface ThreadProps {
 }
 
 export const ThreadPanel: FC<ThreadProps> = ({ parentMessageId, onClose }) => {
-  const currentChannelId = useChannelIdParams();
+  let currentChannelId = useChannelIdParams();
   const workspaceId = useWorkspaceIdParams();
-  const [channel, isChannelLoading] = useGetCurrentChannel({ channelId: currentChannelId });
   const [message, isMessageLoading] = useGetMessageById({ messageId: parentMessageId });
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
 
-  if (isMessageLoading || isCurrentMemberLoading || isChannelLoading) {
+  if (isMessageLoading || isCurrentMemberLoading) {
     return (
       <Panel onPanelClose={onClose} headerText="Thread">
         <div className="h-full flex items-center justify-center">
@@ -55,15 +53,8 @@ export const ThreadPanel: FC<ThreadProps> = ({ parentMessageId, onClose }) => {
     );
   }
 
-  if (!channel) {
-    return (
-      <Panel onPanelClose={onClose} headerText="Thread">
-        <div className="flex h-full items-center justify-center flex-col gap-y-2">
-          <TriangleAlert className="size-5 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Channel not found.</p>
-        </div>
-      </Panel>
-    );
+  if (!currentChannelId && message?.channelId) {
+    currentChannelId = message.channelId;
   }
 
   return (
@@ -71,7 +62,7 @@ export const ThreadPanel: FC<ThreadProps> = ({ parentMessageId, onClose }) => {
       <ThreadScreen
         message={message}
         currentMember={currentMember}
-        currentChannel={channel}
+        currentChannelId={currentChannelId}
       />
     </Panel>
   );

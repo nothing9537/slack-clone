@@ -1,25 +1,32 @@
 "use client";
 
 import { FC, useCallback } from "react";
-import { Loader, LogOut } from "lucide-react";
+import { CircleUser, Loader, LogOut } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 
 import { useCurrentUser } from "@/entities/user";
+import { useProfileMemberId } from "@/entities/message";
+import { useCurrentMember } from "@/entities/member";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
+import { usePanel } from "@/shared/lib/hooks/use-panel";
+import { useWorkspaceIdParams } from "@/shared/lib/hooks";
 
 export const UserButton: FC = () => {
+  const workspaceId = useWorkspaceIdParams();
   const [currentUser, isLoading] = useCurrentUser();
+  const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
   const { signOut } = useAuthActions();
+  const { onPanelOpen } = usePanel(useProfileMemberId);
   const handleSignOut = useCallback(() => signOut(), [signOut]);
 
-  if (isLoading) {
+  if (isLoading || isCurrentMemberLoading) {
     return (
       <Loader className="size-5 animate-spin text-white" />
     );
   }
 
-  if (!currentUser) {
+  if (!currentUser || !currentMember) {
     return null;
   }
 
@@ -37,6 +44,10 @@ export const UserButton: FC = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" side="right" className="w-60">
+        <DropdownMenuItem onClick={() => onPanelOpen(currentMember._id)}>
+          <CircleUser className="size-4 mr-2" />
+          Profile
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="size-4 mr-2" />
           Log Out

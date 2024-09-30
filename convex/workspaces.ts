@@ -168,7 +168,7 @@ export const deleteWorkspace = mutation({
       throw new ConvexError({ message: "Unauthorized." });
     }
 
-    const [members, channels] = await Promise.all([
+    const [members, channels, conversations, reactions, messages] = await Promise.all([
       ctx.db
         .query("members")
         .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
@@ -177,9 +177,21 @@ export const deleteWorkspace = mutation({
         .query("channels")
         .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
         .collect(),
+      ctx.db
+        .query("conversations")
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
+        .collect(),
+      ctx.db
+        .query("reactions")
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
+        .collect(),
+      ctx.db
+        .query("messages")
+        .withIndex("by_workspace_id", (q) => q.eq("workspaceId", args.workspaceId))
+        .collect(),
     ]);
 
-    const entitiesToDelete = [...members, ...channels];
+    const entitiesToDelete = [...members, ...channels, ...conversations, ...reactions, ...messages];
 
     await Promise.all(entitiesToDelete.map((entity) => ctx.db.delete(entity._id)));
 

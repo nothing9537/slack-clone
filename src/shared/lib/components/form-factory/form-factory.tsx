@@ -15,6 +15,7 @@ import { RenderCustomLayout } from "./render/render-custom-layout";
 // utils
 import { isHideKeysMatchValues } from "./utils/is-hide-keys-match-values";
 import { RenderInputOTP } from "./render/render-input-otp";
+import { RenderRadioGroup } from "./render/render-radio-group";
 
 export const FormFactory = typedMemo(<T extends FieldValues>(props: FormFactoryProps<T>): ReactNode[] => {
   const { form, components } = props;
@@ -26,13 +27,15 @@ export const FormFactory = typedMemo(<T extends FieldValues>(props: FormFactoryP
 
     switch (component.type) {
       case "input":
-        return <RenderInput key={component.name} form={form} component={component} />;
+        return <RenderInput<T> key={component.name} form={form} component={component} />;
       case "input-otp":
-        return <RenderInputOTP key={component.name} form={form} component={component} />;
+        return <RenderInputOTP<T> key={component.name} form={form} component={component} />;
       case "custom":
-        return <RenderCustomComponent key={component.name} component={component} />;
+        return <RenderCustomComponent<T> key={component.name} component={component} />;
       case "separator":
-        return <RenderSeparator key={component.name} component={component} />;
+        return <RenderSeparator<T> key={component.name} component={component} />;
+      case "radio-group":
+        return <RenderRadioGroup<T> key={component.name} component={component} form={form} />;
       case "custom-layout":
         return (
           <RenderCustomLayout key={component.name} component={component} form={form}>

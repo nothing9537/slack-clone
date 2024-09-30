@@ -12,7 +12,7 @@ interface NotFoundFallbackProps {
 
 export const NotFoundFallback: FC<NotFoundFallbackProps> = ({ text, iconClassName, textClassName }) => {
   return (
-    <div className="flex flex-col gap-y-2">
+    <div className="flex flex-col gap-y-2 items-center">
       <TriangleAlert className={cn("size-5 text-muted-foreground", iconClassName)} />
       <p className={cn("text-sm text-muted-foreground", textClassName)}>{text}</p>
     </div>

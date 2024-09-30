@@ -55,7 +55,7 @@ export const CreateWorkspaceForm: FC = () => {
               element: (
                 <div className="flex justify-between">
                   <Link href="/join">
-                    <Button variant="outline" onClick={onClose}>
+                    <Button variant="outline" onClick={onClose} type="button">
                       Go to join page
                     </Button>
                   </Link>

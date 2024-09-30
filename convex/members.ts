@@ -1,9 +1,11 @@
-import { v } from "convex/values";
+/* eslint-disable no-restricted-syntax */
+import { ConvexError, v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { populateUser } from "./utils/populate-user.utils";
+import { getMemberOrThrow } from "./utils/get-member-or-throw.utils";
 
 export const getCurrentMember = query({
   args: {
@@ -120,5 +122,107 @@ export const getMemberById = query({
       ...member,
       user,
     };
+  },
+});
+
+export const updateMember = mutation({
+  args: {
+    memberId: v.id("members"),
+    role: v.union(v.literal("admin"), v.literal("member")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const memberToUpdate = await ctx.db.get(args.memberId);
+
+    if (!memberToUpdate) {
+      throw new ConvexError({ message: "Member not found." });
+    }
+
+    const currentMember = await getMemberOrThrow(ctx, memberToUpdate.workspaceId, userId);
+
+    if (!currentMember || currentMember.role !== "admin") {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    await ctx.db.patch(args.memberId, {
+      role: args.role,
+    });
+
+    return args.memberId;
+  },
+});
+
+export const removeMember = mutation({
+  args: {
+    memberId: v.id("members"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    const memberToRemove = await ctx.db.get(args.memberId);
+
+    if (!memberToRemove) {
+      throw new ConvexError({ message: "Member not found." });
+    }
+
+    const currentMember = await getMemberOrThrow(ctx, memberToRemove.workspaceId, userId);
+
+    if (!currentMember) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    if (memberToRemove.role === "admin") {
+      throw new ConvexError({ message: "Admin cannot be removed." });
+    }
+
+    const isSelf = currentMember._id === memberToRemove._id;
+
+    if (isSelf && currentMember.role === "admin") {
+      throw new ConvexError({ message: "Cannot remove self if self is an admin." });
+    }
+
+    if (currentMember.role !== "admin" && !isSelf) {
+      throw new ConvexError({ message: "Unauthorized." });
+    }
+
+    // const [messages, reactions, conversations] = await Promise.all([
+    //   ctx.db.query("messages")
+    //     .withIndex("by_member_id", (q) => q.eq("memberId", memberToRemove._id))
+    //     .collect(),
+    //   ctx.db.query("reactions")
+    //     .withIndex("by_member_id", (q) => q.eq("memberId", memberToRemove._id))
+    //     .collect(),
+    //   ctx.db.query("conversations")
+    //     .filter((q) => q.or(
+    //       q.eq(q.field("memberOneId"), memberToRemove._id),
+    //       q.eq(q.field("memberTwoId"), memberToRemove._id),
+    //     ))
+    //     .collect(),
+    // ]);
+
+    // for await (const message of messages) {
+    //   await ctx.db.delete(message._id);
+    // }
+
+    // for await (const reaction of reactions) {
+    //   await ctx.db.delete(reaction._id);
+    // }
+
+    // for await (const conversation of conversations) {
+    //   await ctx.db.delete(conversation._id);
+    // }
+
+    await ctx.db.delete(args.memberId);
+
+    return args.memberId;
   },
 });

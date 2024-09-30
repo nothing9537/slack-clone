@@ -4,6 +4,7 @@ import { MessagesList, useGetMessages } from "@/entities/message";
 import { GetOrCreateConversationResponseType } from "@/entities/conversation";
 import { Member, PopulatedMember } from "@/entities/member";
 import { InfiniteLoader } from "@/shared/ui/infinite-loader";
+
 import { DirectMessageHero } from "../direct-message-hero/direct-message-hero";
 
 interface DirectMessageScreenProps {

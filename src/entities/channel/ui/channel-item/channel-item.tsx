@@ -26,12 +26,13 @@ const variants = cva(
 export interface ChannelItemProps {
   label: string;
   Icon: LucideIcon | IconType;
-  id: string;
+  id?: string;
   variant?: VariantProps<typeof variants>["variant"];
   workspaceId: Id<"workspaces">;
+  href?: string;
 }
 
-export const ChannelItem: FC<ChannelItemProps> = ({ label, Icon, id, variant, workspaceId }) => {
+export const ChannelItem: FC<ChannelItemProps> = ({ label, Icon, id, variant, workspaceId, href }) => {
   return (
     <Button
       asChild
@@ -39,7 +40,7 @@ export const ChannelItem: FC<ChannelItemProps> = ({ label, Icon, id, variant, wo
       size="sm"
       className={cn(variants({ variant }))}
     >
-      <Link href={`/workspace/${workspaceId}/channel/${id}`}>
+      <Link href={href || `/workspace/${workspaceId}/channel/${id}`}>
         <Icon className="size-4 mr-1 shrink-0" />
         <span className="text-sm truncate">{label}</span>
       </Link>

@@ -181,9 +181,21 @@ export const deleteChannel = mutation({
       throw new ConvexError({ message: "'general' channel cannot be deleted." });
     }
 
-    await ctx.db.delete(args.channelId);
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_channel_id", (q) => q.eq("channelId", args.channelId))
+      .collect();
 
-    // TODO: delete associated messages
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const message of messages) {
+      if (message.images) {
+        await Promise.all(message.images.map((storeId) => ctx.storage.delete(storeId)));
+      }
+    }
+
+    await Promise.all(messages.map((entity) => ctx.db.delete(entity._id)));
+
+    await ctx.db.delete(args.channelId);
 
     return channel;
   },
