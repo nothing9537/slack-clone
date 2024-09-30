@@ -1,3 +1,3 @@
 "use client";
 
-export { WorkspaceLayout as default } from "@/pages-layer/workspace";
+export { WorkspaceIdLayout as default } from "@/pages-layer/workspace";

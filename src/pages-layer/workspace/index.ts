@@ -1,1 +1,1 @@
-export { WorkspaceIdLayout as WorkspaceLayout } from "./ui/layout/workspace-id-layout";
+export { WorkspaceIdLayout } from "./ui/layout/workspace-id-layout";

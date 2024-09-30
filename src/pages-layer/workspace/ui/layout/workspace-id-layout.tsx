@@ -12,12 +12,12 @@ import { LayoutPanelId, LayoutPanelType } from "../../model/types/layout-panel.t
 
 interface WorkspaceLayoutProps {
   children: ReactNode;
-  toolbar?: ReactNode;
-  sidebar?: ReactNode;
-  workspaceSidebar?: ReactNode;
+  // toolbar?: ReactNode;
+  // sidebar?: ReactNode;
+  // workspaceSidebar?: ReactNode;
 }
 
-export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, toolbar, sidebar, workspaceSidebar }) => {
+export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children /* , toolbar, sidebar, workspaceSidebar */ }) => {
   const { queryParam: parentMessageId, onPanelClose: onThreadPanelClose } = usePanel(useParentMessageId);
   const { queryParam: profileMemberId, onPanelClose: onProfileMemberPanelClose } = usePanel(useProfileMemberId);
 
@@ -39,9 +39,9 @@ export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, too
 
   return (
     <div className="h-full">
-      {toolbar || <Toolbar />}
+      <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
-        {sidebar || <Sidebar />}
+        <Sidebar />
         <ResizablePanelGroup direction="horizontal" autoSaveId="workspace-resizable-layout">
           <ResizablePanel
             defaultSize={13}
@@ -49,7 +49,7 @@ export const WorkspaceIdLayout: FC<WorkspaceLayoutProps> = memo(({ children, too
             className="bg-[#5e2c5f]"
             id="sidebar"
           >
-            {workspaceSidebar || <WorkspaceSidebar />}
+            <WorkspaceSidebar />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel
