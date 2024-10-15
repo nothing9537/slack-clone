@@ -8,6 +8,8 @@ import { useGetWorkspaceById } from "@/entities/workspace";
 import { useModal, useWorkspaceIdParams } from "@/shared/lib/hooks";
 import { useMemberIdParams } from "@/shared/lib/hooks/use-member-id";
 
+import { usePanel } from "@/shared/lib/hooks/use-panel";
+import { useProfileMemberId } from "@/entities/message";
 import { LoadingFallback } from "../workspace-sidebar-header/loading-fallback";
 import { WorkspaceHeader } from "../workspace-sidebar-header/workspace-sidebar-header";
 import { WorkspaceSection } from "../workspace-section/workspace-section";
@@ -18,6 +20,7 @@ export const WorkspaceSidebar: FC = memo(() => {
 
   const workspaceId = useWorkspaceIdParams();
   const currentConversationMemberId = useMemberIdParams();
+  const { queryParam: panelProfileMemberId } = usePanel(useProfileMemberId);
   const [currentMember, isCurrentMemberLoading] = useCurrentMember({ workspaceId });
   const [workspace, isWorkspaceLoading] = useGetWorkspaceById({ workspaceId });
   const [channels, isChannelsLoading] = useGetChannels({ workspaceId });
@@ -79,7 +82,7 @@ export const WorkspaceSidebar: FC = memo(() => {
           items={members}
           isLoading={isMembersLoading}
           workspaceId={workspaceId}
-          isItemActive={(item) => item._id === currentConversationMemberId}
+          isItemActive={(item) => item._id === currentConversationMemberId || item._id === panelProfileMemberId}
         />
       </WorkspaceSection>
     </div>

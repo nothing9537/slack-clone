@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { FC, useRef, useState } from "react";
+import { FC, memo, useRef, useState } from "react";
 import Quill from "quill";
 import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
@@ -28,7 +28,7 @@ const Editor = dynamic(
   { ssr: true, loading: EditorLoader },
 );
 
-export const SendMessageForm: FC<SendChannelMessageFormProps> = ({ channel }) => {
+export const SendMessageForm: FC<SendChannelMessageFormProps> = memo(({ channel }) => {
   const form = useForm<SendMessageSchemaType>({ mode: "onTouched", resolver: zodResolver(SendMessageSchema) });
   const editorRef = useRef<Quill | null>(null);
   const [forceEditorRerender, setForceEditorRerender] = useState(0);
@@ -53,4 +53,4 @@ export const SendMessageForm: FC<SendChannelMessageFormProps> = ({ channel }) =>
       </form>
     </Form>
   );
-};
+});
