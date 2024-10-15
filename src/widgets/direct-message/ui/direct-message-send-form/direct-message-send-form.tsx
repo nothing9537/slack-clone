@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, memo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import dynamic from "next/dynamic";
@@ -24,7 +24,7 @@ interface ThreadReplyFormProps {
   className?: ClassValue;
 }
 
-export const DirectMessageSendForm: FC<ThreadReplyFormProps> = ({ className, workspaceId, conversation, otherMember }) => {
+export const DirectMessageSendForm: FC<ThreadReplyFormProps> = memo(({ className, workspaceId, conversation, otherMember }) => {
   const form = useForm<SendMessageSchemaType>({ resolver: zodResolver(SendMessageSchema) });
   const [forceEditorRerender, setForceEditorRerender] = useState(0);
 
@@ -47,4 +47,4 @@ export const DirectMessageSendForm: FC<ThreadReplyFormProps> = ({ className, wor
       </form>
     </Form>
   );
-};
+});
