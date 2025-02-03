@@ -48,6 +48,9 @@ export const GenerateSignUpComponents = (isSubmitting: boolean): SignUpComponent
       name: "email",
       inputType: "email",
       placeholder: "Email",
+      overviewProps: {
+        formFieldDescription: `You can enter any dummy email you want, as it doesn't receive a confirmation code. Email is used only as an identifier for login.`,
+      },
     },
     {
       disabled: isSubmitting,

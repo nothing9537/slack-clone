@@ -5,8 +5,9 @@ import { TriangleAlert } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Form } from "@/shared/ui/form";
 import { Separator } from "@/shared/ui/separator";
-
 import { Mounted } from "@/shared/lib/components";
+import { cn } from "@/shared/lib/utils/cn";
+
 import { useSignActions } from "../../lib/hooks/use-sign-actions";
 import { SignCardServices } from "./sign-card-services";
 
@@ -18,6 +19,7 @@ interface SignCardWrapperProps<T extends FieldValues> {
   form: UseFormReturn<T>;
   isSubmitting: boolean;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
+  className?: string;
   footer: {
     actionText: string;
     description: string;
@@ -26,12 +28,12 @@ interface SignCardWrapperProps<T extends FieldValues> {
 }
 
 export const SignCardWrapper = <T extends FieldValues>(props: SignCardWrapperProps<T>) => {
-  const { headerText, descriptionText, children, form, footer, isSubmitting, setIsSubmitting, errorMessage } = props;
+  const { headerText, descriptionText, children, form, footer, isSubmitting, setIsSubmitting, errorMessage, className } = props;
   const { googleAction, githubAction } = useSignActions();
 
   return (
     <Mounted>
-      <Card className="w-full h-full p-8">
+      <Card className={cn("sm:max-w-md w-full p-8", className)}>
         <CardHeader className="px-0 pt-0">
           <CardTitle>
             {headerText}

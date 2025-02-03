@@ -15,13 +15,14 @@ import { GenerateSignInComponents } from "../../lib/consts/component-generators.
 import { BaseSignCardProps } from "../../model/types/sign.types";
 import { useSignService } from "../../model/services/sign/sign.service";
 
-export const SignInCard: FC<BaseSignCardProps> = memo(({ switchCardsAction, flow }) => {
+export const SignInCard: FC<BaseSignCardProps> = memo(({ switchCardsAction, flow, className }) => {
   const form = useForm<SignInSchemaType>({ mode: "onTouched", resolver: zodResolver(SignInSchema) });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const onSubmit = useSignService(flow, form);
 
   return (
-    <SignCardWrapper
+    <SignCardWrapper<SignInSchemaType>
+      className={className}
       errorMessage={form.formState.errors.error?.message}
       isSubmitting={isSubmitting}
       setIsSubmitting={setIsSubmitting}
